@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Extensión de red — estado y decisiones</title>
+<style>
+  @page { size: A4; margin: 22mm 20mm 22mm 20mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    color: #1c1a17;
+    background: #ffffff;
+    font-size: 11.3pt;
+    line-height: 1.55;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  h1, h2, h3 {
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #16302b;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  h1 {
+    font-size: 20pt;
+    margin: 0 0 2mm 0;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #5b6b64;
+    font-size: 10.5pt;
+    margin: 0 0 7mm 0;
+  }
+  .meta {
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 9pt;
+    color: #7a8a83;
+    border-top: 1px solid #d8ddd9;
+    border-bottom: 1px solid #d8ddd9;
+    padding: 2.5mm 0;
+    margin-bottom: 7mm;
+    display: flex;
+    gap: 6mm;
+  }
+  h2 {
+    font-size: 13.5pt;
+    margin: 9mm 0 3mm 0;
+    padding-bottom: 1.5mm;
+    border-bottom: 2px solid #16302b;
+  }
+  h3 {
+    font-size: 11.5pt;
+    color: #2c4a41;
+    margin: 5mm 0 2mm 0;
+  }
+  p { margin: 0 0 3mm 0; }
+  ul, ol { margin: 0 0 3mm 0; padding-left: 5mm; }
+  li { margin-bottom: 1.5mm; }
+  strong { color: #16302b; }
+  .lede {
+    font-size: 11.8pt;
+    color: #3a453f;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 9pt;
+    margin: 3mm 0 5mm 0;
+  }
+  th {
+    text-align: left;
+    background: #16302b;
+    color: #f3f1ea;
+    padding: 2.2mm 2.5mm;
+    font-weight: 600;
+  }
+  td {
+    padding: 2.2mm 2.5mm;
+    border-bottom: 1px solid #e3e0d6;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #f6f4ee; }
+  .status {
+    display: inline-block;
+    font-size: 8pt;
+    font-weight: 700;
+    padding: 0.5mm 1.8mm;
+    border-radius: 2px;
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.02em;
+  }
+  .st-done { background: #dcece3; color: #14532d; }
+  .st-flag { background: #f6e3c9; color: #7c4a03; }
+  .decision {
+    border: 1px solid #c9d3ce;
+    border-left: 4px solid #16302b;
+    background: #f6f7f5;
+    padding: 3mm 4mm;
+    margin: 0 0 4mm 0;
+    page-break-inside: avoid;
+  }
+  .decision .q {
+    font-weight: 700;
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #16302b;
+    font-size: 10.3pt;
+    margin-bottom: 1mm;
+  }
+  .decision .opts {
+    font-size: 9.8pt;
+    color: #3a453f;
+  }
+  .num { font-variant-numeric: tabular-nums; }
+  .finding {
+    background: #fbf6ea;
+    border: 1px solid #e6d9ad;
+    padding: 2.5mm 4mm;
+    margin: 2mm 0 4mm 0;
+    font-size: 10.3pt;
+  }
+  code {
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 9.3pt;
+    background: #f0efe8;
+    padding: 0 0.8mm;
+  }
+  .footer-note {
+    margin-top: 10mm;
+    padding-top: 3mm;
+    border-top: 1px solid #d8ddd9;
+    font-size: 8.5pt;
+    color: #8a948e;
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+
+<h1>Extensión de red del modelo Diaphorina citri&nbsp;/&nbsp;Tamarixia radiata</h1>
+<p class="subtitle">Estado del trabajo y puntos que requieren autorización — Sebastián Rodríguez-Falcón</p>
+<div class="meta">
+  <span>17 de septiembre de 2026</span>
+  <span>Repositorio: DiaphorinaNetworkModel</span>
+  <span>Base: ECOMOD-26-1479 (en revisión)</span>
+</div>
+
+<p class="lede">Este documento resume qué se ha hecho hasta ahora en la extensión de red del modelo de un solo nodo, qué encontramos, y qué decisiones necesito que autorices o descartes antes de seguir invirtiendo tiempo en escribir resultados.</p>
+
+<h2>1. Planteamiento</h2>
+<p>El paper de un solo nodo ya en revisión menciona explícitamente <em>"metapoblaciones espaciales / huertos conectados / migración"</em> como extensión futura. Esto es exactamente esa extensión: cada localidad (nodo) corre el mismo sistema de cuatro compartimentos ya revisado por los referís (Diaphorina citri, brotes, Tamarixia radiata, vigor de planta), con intercambio difusivo entre nodos solo en Diaphorina citri y Tamarixia radiata (brotes y vigor permanecen locales a cada huerto). El acoplamiento usa la matriz Laplaciana del grafo de la red, y las liberaciones periódicas de parasitoide pueden ser uniformes (todos los nodos) o focalizadas (solo en un nodo, p. ej. el foco de un brote).</p>
+<p>Se reutilizan exactamente los mismos parámetros calibrados de la Tabla&nbsp;1 del paper en revisión, para que ambos trabajos sean directamente comparables. Confirmamos que, sin difusión (<code>Dd=Dt=0</code>), cada nodo se reduce exactamente al modelo de un solo nodo.</p>
+
+<h2>2. Qué se ha hecho ya</h2>
+<table>
+  <tr><th style="width:16%">Experimento</th><th style="width:12%">Estado</th><th>Qué prueba</th></tr>
+  <tr>
+    <td><strong>1 · Validación</strong></td>
+    <td><span class="status st-done">Implementado</span></td>
+    <td>Verificación interna: sin difusión, la red se reduce exactamente al modelo de un nodo. Prerrequisito de correctitud, no es una figura del paper.</td>
+  </tr>
+  <tr>
+    <td><strong>2 · Contención de brote</strong></td>
+    <td><span class="status st-done">Corrido</span></td>
+    <td>Brote puntual (nodo&nbsp;1 en 200, resto en 20) × 7 topologías × grid de difusión × 3 estrategias de liberación (ninguna / uniforme / focalizada en el foco). Resultado central propuesto para el paper.</td>
+  </tr>
+  <tr>
+    <td><strong>3 · Réplicas</strong></td>
+    <td><span class="status st-done">Corrido</span></td>
+    <td>Repite el Experimento&nbsp;2 redibujando las topologías estocásticas (aleatoria, mundo pequeño, libre de escala) 10 veces cada una, para reportar media±desviación en vez de una sola instancia de grafo.</td>
+  </tr>
+  <tr>
+    <td><strong>5 · Mapa de bifurcación</strong></td>
+    <td><span class="status st-flag">Corrido — hallazgo relevante</span></td>
+    <td>Clasifica cada combinación (δ,T) como "regular" (converge a una órbita periódica) o "irregular", en un grid de 8×8. Ver hallazgo abajo.</td>
+  </tr>
+  <tr>
+    <td><strong>6 · Dosis-frecuencia</strong></td>
+    <td><span class="status st-done">Corrido</span></td>
+    <td>Dentro del horizonte corto validado, qué combinación (δ,T) es más costo-eficiente (área bajo la curva de plaga evitada por parasitoide liberado), por topología y estrategia.</td>
+  </tr>
+  <tr>
+    <td><strong>7 · Sensibilidad</strong></td>
+    <td><span class="status st-done">Corrido</span></td>
+    <td>Perturbación ±10% de los 18 parámetros locales, uno a la vez, midiendo el efecto sobre la densidad de plaga en la red.</td>
+  </tr>
+  <tr>
+    <td><strong>4 · Estabilidad de sincronización</strong> <em>(nuevo)</em></td>
+    <td><span class="status st-flag">Corrido — hallazgo abierto</span></td>
+    <td>Generaliza el análisis de estabilidad tipo Floquet a un exponente de Lyapunov de tiempo finito, para no depender de que exista una órbita periódica exacta (motivado directamente por el Experimento&nbsp;5). Ver hallazgo abajo.</td>
+  </tr>
+</table>
+
+<h3>Hallazgo del Experimento 5 — aperiodicidad del modelo base</h3>
+<div class="finding">De las <strong>64 combinaciones</strong> (δ,T) probadas (δ∈[5,40], T∈[5,40], 120 ciclos de liberación cada una), <strong>ninguna</strong> —incluyendo el propio baseline del paper (δ=35,&nbsp;T=15)— converge a una órbita periódica limpia; las corridas largas se ven aperiódicas/caóticas. Esto no invalida los resultados de los Experimentos&nbsp;2/3/6/7 (todos corren sobre el horizonte corto ya validado por el paper de un nodo, <span class="num">tt=100</span>), pero sí significa que un análisis de estabilidad clásico tipo Floquet —que exige una órbita periódica exacta para linealizar— no es aplicable sin más al modelo base.</div>
+
+<h3>Hallazgo del Experimento 4 — estabilidad de sincronización en la red</h3>
+<p>Construimos <code>MasterLyapunovExponent</code>, que generaliza el análisis de estabilidad de sincronización a trayectorias no necesariamente periódicas (vía renormalización tipo Benettin), y lo validamos exactamente contra un cálculo independiente (diferencia&nbsp;=&nbsp;0). Aplicado al espectro Laplaciano real de las 7 topologías (baseline δ=35, T=15, <span class="num">Dd=Dt=0.03</span>):</p>
+<table>
+  <tr><th>Topología</th><th>λ transversal máx.</th><th>Predicción</th><th>Sync. empírico (Exp. 3)</th></tr>
+  <tr><td>Completa</td><td class="num">−0.0134</td><td>Estable</td><td class="num">0.851</td></tr>
+  <tr><td>Mundo pequeño</td><td class="num">−0.0046</td><td>Estable</td><td class="num">0.803</td></tr>
+  <tr><td>Libre de escala</td><td class="num">−0.0027</td><td>Estable</td><td class="num">0.805</td></tr>
+  <tr><td>Estrella</td><td class="num">−0.0010</td><td>Estable</td><td class="num">0.851</td></tr>
+  <tr><td>Ciclo</td><td class="num">−0.0003</td><td>Estable</td><td class="num">0.744</td></tr>
+  <tr><td>Camino</td><td class="num">+0.0010</td><td><strong>Inestable</strong></td><td class="num">0.731</td></tr>
+  <tr><td>Aleatoria</td><td class="num">+0.0026</td><td><strong>Inestable</strong></td><td class="num">0.775</td></tr>
+</table>
+<p>En los extremos la teoría coincide bien con la simulación: las topologías más conectadas (Completa, Estrella) son las más sincronizadas en ambas. Pero <strong>"Aleatoria" muestra un desajuste</strong>: la teoría la predice la menos estable de las 7, mientras que empíricamente sincroniza mejor que Camino e incluso que Ciclo. Sospecho que es un problema de comparación (la predicción usa una sola instancia de grafo aleatorio, mientras que el dato empírico está promediado sobre 10 semillas), pero no lo he confirmado todavía — ver Decisión&nbsp;B.</p>
+
+<h3>Hallazgo del Experimento 7 — qué parámetros importan más</h3>
+<p>Los parámetros más influyentes sobre la densidad de plaga en la red <strong>no</strong> son los de plaga/parasitoide directamente, sino los de vigor de planta y brotes: <code>r4</code> (14.1%), <code>b42</code> (13.7%), <code>b12</code> (12.4%), <code>r3</code> (12.3%). Sugiere que, si se calibra con datos de campo más adelante, el vigor/brotes merece más esfuerzo de medición que la interacción plaga–parasitoide en sí.</p>
+
+<h2>3. Ya decidido (para tu ratificación)</h2>
+<div class="decision">
+  <div class="q">No incorporar la respuesta funcional de Holling tipo II al modelo de red por ahora.</div>
+  <div class="opts">Razón: apilar dos extensiones grandes (red + respuesta saturante) a la vez diluye qué se está mostrando. El paper de un nodo ya estableció el patrón correcto — núcleo primero, robustez después — y la salvedad ya escrita ahí (la supresión de plaga no es robusta a Holling&nbsp;II) se hereda como limitación compartida en el paper de red. <strong>¿Apruebas dejarlo fuera de alcance por ahora?</strong></div>
+</div>
+
+<h2>4. Decisiones pendientes</h2>
+
+<div class="decision">
+  <div class="q">A. ¿Cómo reportamos la aperiodicidad del Experimento 5?</div>
+  <div class="opts">Opción 1: reportarla tal cual, como limitación compartida de ambos papers (el modelo base no tiene una órbita periódica simple a estos horizontes). Opción 2: investigar más antes de escribir — probar más tiempo de calentamiento (<em>burn-in</em>) o un umbral de dispersión distinto, por si el criterio actual es demasiado estricto.</div>
+</div>
+
+<div class="decision">
+  <div class="q">B. ¿Vale la pena resolver el desajuste de "Aleatoria" antes de escribir el Experimento 4?</div>
+  <div class="opts">Promediar el Experimento 4 sobre 10 semillas de grafo aleatorio (como ya hace el Experimento 3) costaría ~10x más cómputo en esa parte. Alternativa: reportarlo tal cual, como pregunta abierta/limitación honesta.</div>
+</div>
+
+<div class="decision">
+  <div class="q">C. ¿Alcance del paper de red?</div>
+  <div class="opts">¿Los 7 experimentos (contención, dosis-frecuencia, sensibilidad, estabilidad de sincronización) caben en un solo paper, o prefieres recortar a un subconjunto para una primera entrega?</div>
+</div>
+
+<div class="footer-note">Generado a partir del estado actual de <code>DiaphorinaNetworkModel</code> (commits de esta semana). Los CSV y figuras de cada experimento están en <code>Model/Mathematica/Results/</code>.</div>
+
+</body>
+</html>
