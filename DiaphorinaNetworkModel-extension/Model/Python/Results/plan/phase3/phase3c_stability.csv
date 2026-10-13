@@ -1,0 +1,11 @@
+"Topology","k","mt","r3_eff","MaxTransverseLyapunov","PredictedSyncStable","AllReliable"
+"Cycle",2,0.0,-0.3,-0.000771924252813415,true,true
+"Cycle",2,0.05,-0.303,-0.0019480039194689652,true,true
+"Cycle",2,0.1,-0.306,-0.0025947339044882396,true,true
+"Cycle",2,0.2,-0.312,-0.0014338638339339163,true,true
+"Cycle",2,0.4,-0.324,-0.0013151191096980898,true,true
+"Complete",7,0.0,-0.3,-0.013080351817711677,true,true
+"Complete",7,0.05,-0.3105,-0.01706029731750317,true,true
+"Complete",7,0.1,-0.321,-0.014972623291271815,true,true
+"Complete",7,0.2,-0.34199999999999997,-0.01554571416406239,true,true
+"Complete",7,0.4,-0.384,-0.01646320414535867,true,true
