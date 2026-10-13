@@ -1,80 +1,149 @@
-# DiaphorinaNetworkModel
+# Dispersión relativa, hipótesis Goldilocks y mortalidad en tránsito
 
-Extensión de red (metapoblacional) de un modelo de control biológico de *Diaphorina citri* (vector del HLB / "greening" de los cítricos) mediante liberaciones periódicas del parasitoide *Tamarixia radiata*.
+Modelo en red de *Diaphorina citri* (psílido, x₁), brotes (x₂), *Tamarixia radiata* (parasitoide, x₃) y vigor de planta (x₄), con liberaciones periódicas del parasitoide. Este repositorio contiene la versión en Python del modelo (`Model/Python`, experimentos 1 a 7 del manuscrito) y la implementación completa del plan de trabajo [`docs/plan_de_trabajo.pdf`](docs/plan_de_trabajo.pdf), fases 0 a 4.
 
-El modelo de un solo nodo ya está calibrado y en revisión (preprint/artículo base: **ECOMOD-26-1479**). Ese trabajo menciona explícitamente la extensión a "metapoblaciones espaciales / huertos conectados / migración" como trabajo futuro — este repositorio es esa extensión: en vez de un huerto aislado, se modela una red de huertos (nodos) acoplados por dispersión.
-
-## El modelo
-
-Cada nodo corre el mismo sistema de cuatro compartimentos del paper de un nodo:
-
-| Variable | Significado |
+| Documento | Contenido |
 |---|---|
-| `x1` | *Diaphorina citri* (la plaga/vector) |
-| `x2` | Brotes nuevos de la planta |
-| `x3` | *Tamarixia radiata* (el parasitoide liberado) |
-| `x4` | Vigor de la planta |
+| Este README | Qué se hizo, resultados principales, cómo reproducir y cómo usar los resultados |
+| [`docs/RESULTADOS.md`](docs/RESULTADOS.md) | Explicación fase por fase con todas las figuras y tablas |
+| [`docs/CORRECCIONES.md`](docs/CORRECCIONES.md) | Errores del código e incoherencias del plan encontrados y cómo se resolvieron |
+| [`Model/Python/README.md`](Model/Python/README.md) | Referencia técnica del código |
 
-Cada `xi` sigue una ecuación logística acoplada a las otras variables locales del mismo nodo (interacción plaga↔parasitoide, plaga↔brotes↔vigor). Cada `T` unidades de tiempo se libera una dosis `δ` de *Tamarixia* (`x3 → x3 + δ`), simulando liberaciones periódicas de control biológico.
+## Resultados en una página
 
-**Extensión de red:** los nodos se acoplan mediante la matriz Laplaciana del grafo de la red, con difusión solo en `x1` (Diaphorina, que vuela entre huertos) y `x3` (Tamarixia, que también se dispersa). Brotes (`x2`) y vigor (`x4`) permanecen estrictamente locales a cada nodo — son propiedades de la planta, no se mueven. Las liberaciones de parasitoide pueden aplicarse de forma **uniforme** (todos los nodos) o **focalizada** (solo en un nodo, p. ej. el foco de un brote de plaga).
+**Fase 0 (aprobada).** El integrador admite mortalidad en tránsito m_d y m_t, dos condiciones iniciales (CI-A y CI-B) y cuenta bien el número de liberaciones. Con m = 0 reproduce las 336 corridas del experimento 2 con un error relativo máximo de 4·10⁻¹⁶, y pasa la prueba de balance de masa, la de D = 0 y la de equivalencia entre la estrella y el grafo completo.
 
-Con difusión apagada (`Dd = Dt = 0`) cada nodo se reduce exactamente al modelo de un solo nodo del paper en revisión — esto está validado explícitamente (Experimento 1) para que ambos trabajos sean directamente comparables y usen los mismos parámetros calibrados (`Model/Mathematica/tabla_latex.txt`).
+**Fase 1 (resultado negativo).** Ninguna variable adimensional colapsa la eficiencia de la liberación dirigida E_T. El mejor R² con validación cruzada es 0,41 en CI-A y 0,18 en CI-B, cuando el criterio pedía 0,9. La razón es que |r₃| no actúa solo como una escala de tiempo. Una mortalidad natural mayor del parasitoide duplica el AUC de plaga sin liberación y por eso **aumenta** E_T, mientras que Π = D_tτ_t/(D_dτ_d) mueve r₃ en sentido contrario.
 
-## Estructura del repositorio
+**Fase 2 (sin Goldilocks sin costo).** Sin mortalidad en tránsito, E_T crece con D_t hasta el borde de la malla (D_t = 1) en las 42 curvas de CI-A. En CI-B aparecen nueve mesetas con un máximo interior, pero su prominencia no pasa de 1,9 % y ninguna se repite en los dos horizontes. La caída de 5,30 a 4,91 que se veía en el experimento 2 con D_d = 0 es real. Es un valle cuyo mínimo cae entre D_t ≈ 0,015 y 0,1 según la red. Más allá, la eficiencia supera de nuevo 5,30, desde D_t ≈ 0,06 en la estrella y desde D_t ≈ 0,5 en la trayectoria.
+
+**Fase 3 (hay cresta, pero hay que interpretarla bien).** Con m_t > 0 aparece un D_t óptimo muy marcado, con prominencia mediana del 73 %, que baja como D_t* ∝ m_t^−0,91. La compuerta formal hacia la fase 4 se cumple. Hay que tener en cuenta dos cosas al leerla.
+1. El pico de E_T **no** es un mínimo del AUC de plaga con liberación. Aparece porque en la corrida sin liberación el parasitoide residente colapsa (su AUC cae a entre 2 y 40 % del valor que tiene sin mortalidad, con mediana del 20 %) mientras que las liberaciones lo mantienen. Es un óptimo de eficiencia relativa a un contrafactual que se deteriora.
+2. La regla D_t*·m_t·k_s ≈ |r₃| se cumple solo en orden de magnitud. El cociente tiene una mediana de 1,33 en CI-B, pero va de 0,49 a 5,66 y depende de la red y de r₃. Con el **grado medio** ⟨k⟩ en lugar del grado del foco la dispersión se reduce a la mitad (de 0,60 a 2,05), y el valor absoluto de la pérdida en la cresta, D_t*·m_t·⟨k⟩, se parece más a b₃₁·x̄₁ − |r₃| que a |r₃|. Aquí x̄₁ es la densidad de plaga sin parasitoide.
+
+Otros resultados de la fase 3. Con m_t > 0 la estrella y el grafo completo dejan de ser equivalentes, con hasta 42 % menos AUC en la estrella. La correlación entre el grado del foco y el AUC con liberación dirigida (−0,99 en CI-A con m = 0) pasa a +0,18 con m_t = 0,4. El estado sincrónico del ciclo y del grafo completo sigue siendo estable para todos los m_t. La mortalidad del psílido m_d baja D_t*. La mediana del desplazamiento es de 2 a 4 % con D_d = 0,01, de 3 a 11 % con D_d = 0,03 y de 18 a 45 % con D_d = 0,1, para m_d = 0,1 y 0,2.
+
+**Fase 4 (opcional, se hizo porque la compuerta pasó).** En 30 grafos geométricos con mortalidad que depende de la distancia, todas las curvas tienen un máximo interior. La regla de la fase 3 con k_s y la mortalidad media de las aristas del foco predice D_t* con un error mediano del 22 % (correlación 0,86). La versión con ⟨k⟩ y la mortalidad media de toda la red lo predice con un error del 10 % (correlación 0,99).
+
+**Corrección al experimento 6.** Contaba con `floor(t_max/T)` una liberación en t = t_max que nunca se aplica. Tras corregirlo, el calendario de mejor costo-eficiencia pasa de T = 15 a T = 20 en las ocho combinaciones de topología y estrategia.
+
+## Estructura
 
 ```
-Model/Mathematica/
-  Functions.m                          Modelo base (un nodo) + versión de red para uso interactivo/plots,
-                                        más las funciones de análisis del paper de un nodo (sweeps de
-                                        liberación, comparación de escenarios, chequeo de positividad,
-                                        respuesta de Holling II, exponente de invasión, robustez a jitter)
-  NetworkExperiments.wl                Infraestructura de red para correr experimentos sin abrir un notebook:
-                                        solver headless (SolveNetworkData), generadores de topología
-                                        (MakeTopology: Path/Cycle/Star/Complete/Random/SmallWorld/ScaleFree)
-                                        y métricas por experimento (AUC, sincronía, CV espacial, etc.)
-  NetworkStability.wl                  Análisis de estabilidad de la sincronización de la red (tipo
-                                        Master Stability Function): descompone la estabilidad transversal
-                                        por autovalor del Laplaciano, con una versión clásica (Floquet,
-                                        requiere órbita periódica exacta) y una generalizada (exponente de
-                                        Lyapunov de tiempo finito vía renormalización de Benettin, no
-                                        requiere periodicidad)
-  RunExperiment1_Validation.wls        Exp. 1: la red con Dd=Dt=0 reproduce exactamente el modelo de un nodo
-  RunExperiment2_OutbreakContainment.wls  Exp. 2: contención de un brote puntual × 7 topologías × grid de
-                                        difusión × 3 estrategias de liberación (ninguna/uniforme/focalizada)
-  RunExperiment3_Replicates.wls        Exp. 3: repite el Exp. 2 con varias semillas de grafo para las
-                                        topologías estocásticas (media ± desviación, no una sola instancia)
-  RunExperiment4_StabilityValidation.wls  Exp. 4: valida y aplica el análisis de estabilidad de sincronización
-                                        de NetworkStability.wl a las 7 topologías reales de los Exp. 2/3
-  RunExperiment5_BifurcationMap.wls    Exp. 5: mapa de bifurcación (δ,T) del modelo de un nodo a largo plazo —
-                                        busca si existe una órbita periódica genuina (prerrequisito del Exp. 4)
-  RunExperiment6_DoseFrequency.wls     Exp. 6: barrido dosis-frecuencia (δ,T) por topología, costo-eficiencia
-                                        del control dentro del horizonte corto ya validado por el paper base
-  RunExperiment7_Sensitivity.wls       Exp. 7: sensibilidad local (±10%) de los 18 parámetros del modelo
-                                        sobre la densidad de plaga en la red
-  PlotFromCSV_Experiment3.wls          Genera figuras a partir del CSV del Exp. 3
-  PlotFromCSV_Experiment6.wls          Genera figuras a partir del CSV del Exp. 6
-  tabla_latex.txt                      Tabla de parámetros calibrados, compartida con el paper de un nodo
-  Results/                             CSV y figuras de salida de cada experimento
-
-Reports/
-  reporte_extension_red.html           Estado del trabajo, hallazgos y decisiones pendientes de autorización
+.
+├── README.md                      este archivo
+├── docs/
+│   ├── plan_de_trabajo.pdf        plan original
+│   ├── RESULTADOS.md              resultados fase por fase
+│   └── CORRECCIONES.md            errores e incoherencias resueltos
+└── Model/Python/
+    ├── core.py, common.py, functions.py, network_experiments.py, network_stability.py
+    ├── run_experiment{1..7}_*.py, plot_from_csv_experiment{3,6}.py, Model.ipynb
+    ├── plan_common.py             definiciones del plan (redes, Π, Π_t, eficiencias, ejecutor)
+    ├── plan_plots.py              estilo y paleta de las figuras del plan
+    ├── test_phase0.py             pruebas de la fase 0 (7 pruebas)
+    ├── run_phase1_relative_dispersion.py   + analyze_phase1.py
+    ├── run_phase2_goldilocks.py            + analyze_phase2.py
+    ├── run_phase3_transit_mortality.py     + analyze_phase3.py
+    ├── run_phase3c_stability.py
+    ├── run_phase4_edge_mortality.py
+    └── Results/
+        ├── experiment*.csv|png    experimentos 1 a 7 (el 6 regenerado con la corrección)
+        └── plan/phase{0..4}/      CSV crudos, tablas y figuras del plan
 ```
 
-## Cómo correr un experimento
+## Cómo reproducir
 
-Los experimentos corren en modo headless con `wolframscript` (no generan `.nb`), y escriben sus resultados en `Model/Mathematica/Results/` como CSV (y a veces PNG):
+Requiere Python ≥ 3.10. Los resultados se generaron con Python 3.13, numpy 2.5.3, scipy 1.18.1, networkx 3.6.1, pandas 3.0.5 y matplotlib 3.11.2. Las redes aleatorias dependen de la versión de networkx. Con otra versión, la prueba 1 de la fase 0 (reproducir el experimento 2) puede fallar en las topologías Random, SmallWorld y ScaleFree aunque el código esté bien. Si pasa, conviene fijar `networkx==3.6.1`.
 
-```powershell
-cd Model/Mathematica
-wolframscript -file RunExperiment2_OutbreakContainment.wls
+```bash
+cd Model/Python
+pip install -r requirements.txt
+
+python test_phase0.py                              # ~4 min, debe terminar en "ALL PHASE-0 TESTS PASS"
+
+python run_phase1_relative_dispersion.py --pilot   # 243 corridas
+python run_phase1_relative_dispersion.py           # 10 206 corridas
+python analyze_phase1.py
+
+python run_phase2_goldilocks.py                    # 6300 corridas
+python run_phase2_goldilocks.py --check-dd0        # 1092 corridas
+python analyze_phase2.py
+
+python run_phase3_transit_mortality.py --pilot     # 585 corridas
+python run_phase3_transit_mortality.py             # 18 720 corridas
+python run_phase3_transit_mortality.py --phase3b   # 4032 corridas
+python run_phase3c_stability.py
+python analyze_phase3.py
+
+python run_phase4_edge_mortality.py                # 900 corridas, lee la compuerta de la fase 3
 ```
 
-Cada script se basta a sí mismo: carga `Functions.m` y/o `NetworkExperiments.wl`/`NetworkStability.wl` según lo que necesite. El orden lógico para reproducir todo desde cero es 1 → 2 → 3 → 5 → 4 → 6 → 7 (el 5 debe correr antes que el 4 porque el 4 depende de lo que el 5 encontró sobre periodicidad).
+Los tiempos son de una máquina de 2 núcleos: fase 1 unos 25 min, fase 2 unos 35 min, fase 3a unos 40 min y fase 3b unos 9 min. Los scripts `run_phase*` usan todos los núcleos y son **reanudables**. Escriben una fila por combinación a medida que terminan, y si se interrumpen basta con volver a ejecutarlos para que sigan donde quedaron. Para rehacer una fase desde cero hay que borrar su CSV.
 
-## Estado actual y hallazgos
+Los barridos usan `rtol = 1e-8` y `atol = 1e-10`. La prueba 6 de la fase 0 comprueba que esto cambia E_T y E_U en menos de 10⁻⁸ en relación con las tolerancias del manuscrito (`1e-10` y `1e-12`), que se siguen usando en la prueba de reproducción y en los experimentos 1 a 7.
 
-El resumen ejecutivo — qué está hecho, qué se encontró, y qué decisiones de alcance faltan por resolver — vive en [Reports/reporte_extension_red.html](Reports/reporte_extension_red.html). Dos hallazgos abiertos, en breve:
+## Cómo usar los resultados
 
-- **Aperiodicidad (Exp. 5):** a los parámetros del paper base, el modelo de un nodo no converge a una órbita periódica limpia en ninguna de las 64 combinaciones (δ,T) probadas — las corridas largas son aperiódicas/caóticas. No invalida los Experimentos 2/3/6/7 (corren en el horizonte corto ya validado, `tt=100`), pero sí limita qué tan lejos puede llegar un análisis de estabilidad clásico tipo Floquet.
-- **Estabilidad de sincronización (Exp. 4):** la topología de red predice razonablemente bien (y se valida) qué tan sincronizados quedan los nodos, con una excepción sin resolver en la topología "Aleatoria" (ver el reporte para el detalle).
+### Archivos crudos
+
+Cada fila de `phase1_grid.csv`, `phase2_grid.csv`, `phase3a_grid.csv` y `phase3b_grid.csv` es **una combinación de parámetros**, en la que se resolvieron las tres estrategias con parámetros idénticos. Las columnas son:
+
+| Columna | Significado |
+|---|---|
+| `Network`, `k_s` | red (ver tabla de redes) y grado del foco (nodo 0) |
+| `CI` | `A`: 200 psílidos en el foco y 20 en los demás nodos; `B`: 200 en el foco y 0 en los demás |
+| `Dd`, `Dt`, `r3`, `md`, `mt`, `tmax` | parámetros variados |
+| `Delta`, `T`, `n_rel` | dosis, período y liberaciones aplicadas, n_rel = ⌈t_max/T⌉ − 1 |
+| `Q_T`, `Q_U` | parasitoides liberados, δ·n_rel·1 y δ·n_rel·8 |
+| `AUC_None`, `AUC_Uniform`, `AUC_Targeted` | ∫ Σᵢ x₁ᵢ dt en cada estrategia |
+| `AUCfocus_*`, `ParAUC_*` | AUC de plaga en el foco y AUC total del parasitoide |
+| `E_T`, `E_U`, `E_ratio` | (AUC_None − AUC_estrategia)/Q y el cociente E_T/E_U |
+| `Pi_r1`, `Pi_T0`, `Pi_t` | Π con τ_d = 1/\|r₁\| = 5 o τ_d = T₀ = 7,8, y Π_t = D_t k_s/(\|r₃\| + m_t D_t k_s) |
+
+Los CSV se leen con `pd.read_csv(ruta, keep_default_na=False)`. Sin esa opción, pandas convierte la estrategia `"None"` de los CSV de los experimentos 2 a 7 en `NaN`.
+
+### Redes focales
+
+| Nombre | Generador (semilla) | k_s | ⟨k⟩ |
+|---|---|---|---|
+| Path | trayectoria, foco en un extremo | 1 | 1,75 |
+| Cycle | ciclo | 2 | 2,00 |
+| Random_s9 | G(8; 0,4), semilla 9 | 3 | 3,00 |
+| Random_s3 | G(8; 0,4), semilla 3 | 4 | 2,50 |
+| Random_s4 | G(8; 0,4), semilla 4 | 5 | 3,25 |
+| ScaleFree_s2 | Barabási–Albert (m = 2), semilla 2 | 6 | 3,00 |
+| Star | estrella, foco en el centro | 7 | 1,75 |
+| Complete | grafo completo (solo fases 3 y piloto) | 7 | 7,00 |
+
+Las cuatro redes aleatorias son instancias del experimento 3, con el mismo generador y la misma semilla. En cada caso se tomó la primera semilla entre 1 y 10 cuyo nodo 0 tiene el grado buscado.
+
+### Qué se puede afirmar y qué no
+
+Afirmaciones respaldadas:
+
+- La eficiencia de la liberación dirigida no depende de una sola combinación adimensional de D_t, D_d y r₃ (tabla 1.1). Ni D_t/D_d ni Π sirven para generalizar a otros pares plaga–enemigo.
+- Sin costo de dispersión, en este modelo y con estos horizontes, un parasitoide más móvil nunca es peor para la liberación dirigida, salvo mesetas de menos del 2 %.
+- Con mortalidad en tránsito existe un D_t que maximiza E_T y escala aproximadamente como 1/(m_t·⟨k⟩). La compuerta de la fase 3 se cumple y la fase 4 confirma la forma de la regla en redes heterogéneas.
+- La proposición de equivalencia estrella–completo y la correlación negativa entre grado del foco y AUC solo valen con m = 0.
+
+Hay que reportarlas con salvedades:
+
+- La cresta de E_T mide cuánto evita la liberación **respecto de no liberar**. En la cresta, el AUC de plaga con liberación es mucho mayor que con D_t bajo (figura 3.5). Si la pregunta de manejo es "qué D_t deja menos plaga", la respuesta es "el más bajo" cuando m_t > 0. El mínimo interior del AUC con liberación, cuando existe, es menor al 1 %.
+- La constante de la regla depende de r₃. D_t*·m_t·⟨k⟩ vale unos 0,46 con r₃ = −0,3 y unos 0,35 con r₃ = −0,45. La fórmula |r₃| del plan no recoge esa dependencia y la explicación propuesta con b₃₁x̄₁ − |r₃| es una lectura posterior a los datos, no una derivación.
+- Las curvas con t_max = 300 tienen oscilaciones en D_t (figura 2.1) que vienen de la dinámica oscilatoria del modelo, no de error numérico.
+- La correlación −0,98 entre grado del foco y AUC se obtiene en CI-A, con D_d = D_t ≈ 0,03 y m = 0. Con D = 0,01 o 0,1 baja a −0,42 y −0,63, y en CI-B es positiva (entre +0,40 y +0,88).
+
+### Para el manuscrito
+
+Los tres resultados que el plan señalaba como decisivos son:
+
+| Entregable | Archivo | Resultado |
+|---|---|---|
+| Tabla 1.1, prueba de colapso | `Results/plan/phase1/table1_1_cv_r2.csv` | negativo, ninguna candidata colapsa |
+| Figura 3.1, cresta en (D_t, m_t) | `Results/plan/phase3/fig3_1_maps_Dt_mt.png` | positivo, la cresta existe y baja con m_t |
+| Figura 3.2, regla D_t*·m_t·k_s ≈ \|r₃\| | `Results/plan/phase3/fig3_2_rule.png` | parcial, vale en orden de magnitud y mejora con ⟨k⟩ |
+
+## Licencia y cita
+
+El repositorio no trae licencia. Hay que añadir una antes de hacerlo público.
