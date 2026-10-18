@@ -145,6 +145,17 @@ def release_times(T, tt):
     return out
 
 
+def n_releases(T, tt):
+    """Number of releases actually applied on (0, tt): n_rel(T) = ceil(tt/T) - 1
+    (plan, Fase 0, cambio 3). floor(tt/T) over-counts by one whenever T divides
+    tt, because the release at t = tt is never applied (see release_times)."""
+    if T is None or T <= 0:
+        return 0
+    n = int(np.ceil(tt / T)) - 1
+    assert n == len(release_times(T, tt)), (T, tt)
+    return n
+
+
 def solve_impulsive(rhs, y0, t_span, jump_times=(), jump=None,
                     rtol=None, atol=None, method=None):
     """Integrates y' = rhs(t,y) over t_span, applying y -> jump(y) at each of

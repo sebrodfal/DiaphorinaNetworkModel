@@ -1,12 +1,16 @@
 """Experiment 6: dose-frequency sweep (delta x T) crossed with topology, over the
 short horizon used throughout the preprint (tt=100).
 
-Cost-effectiveness: TotalReleased = delta * (number of release events in
-[0,tt]) * (number of release nodes). CostEfficiency = AUC avoided per unit of
-parasitoid released, relative to the no-control baseline for the same topology."""
+Cost-effectiveness: TotalReleased = delta * n_rel(T) * (number of release nodes),
+with n_rel(T) = ceil(tt/T) - 1 the number of releases actually applied on (0,tt).
+CostEfficiency = AUC avoided per unit of parasitoid released, relative to the
+no-control baseline for the same topology.
+Earlier versions used floor(tt/T), which counted a release at t = tt that is
+never applied, so CostEfficiency was underestimated for T = 5, 10 and 20."""
 
 import numpy as np
 
+from core import n_releases
 from common import PARAMS, base_outbreak_ics, results_path, write_csv
 from network_experiments import experiment_metrics, make_topology, solve_network_data
 
@@ -36,7 +40,7 @@ for topo in topologies:
                 n_release_nodes = n if strategy == "Uniform" else 1
                 data = solve_network_data(graph, Dd_val, Dt_val, delta_amt, T_val, PARAMS, ics, release_nodes)
                 metrics = experiment_metrics(data)
-                n_events = int(np.floor(tt / T_val))
+                n_events = n_releases(T_val, tt)
                 total_released = delta_amt * n_events * n_release_nodes
                 auc_avoided = baseline_auc[topo] - metrics["PestAUC"]
                 row = {"Topology": topo, "Delta": delta_amt, "T": T_val, "Strategy": strategy,

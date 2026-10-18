@@ -49,6 +49,16 @@ def write_csv(path, rows):
             fh.write(",".join(cell(r[c]) for c in cols) + "\n")
 
 
+def outbreak_ics(n, tt, kind="A"):
+    """Initial conditions (plan, Fase 0, cambio 2). Node 0 is the focus.
+    CI-A ("A"): 200 psyllids at the focus and 20 at every other node (original).
+    CI-B ("B"): point outbreak, 200 at the focus and 0 elsewhere; the pest can
+                only reach the other nodes by dispersal, so Dd = 0 makes no sense.
+    Both use x2 = 10, x3 = 15, x4 = 30 at every node."""
+    other = {"A": 20, "B": 0}[kind]
+    return [[200] + [other] * (n - 1), [10] * n, [15] * n, [30] * n, tt]
+
+
 def base_outbreak_ics(n, tt):
-    """Point-source outbreak: node 1 starts at 200, the rest at 20."""
-    return [[200] + [20] * (n - 1), [10] * n, [15] * n, [30] * n, tt]
+    """Point-source outbreak: node 1 starts at 200, the rest at 20 (CI-A)."""
+    return outbreak_ics(n, tt, "A")

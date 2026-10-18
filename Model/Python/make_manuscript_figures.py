@@ -1,10 +1,11 @@
 """Publication figures (English labels, PDF) for the manuscript sections on
 relative dispersal, the cost-free optimum and transit mortality.
 
-Reads only the CSV outputs of phases 1-4 (Results/plan/phase*/) and writes
-Results/plan/manuscript/fig4_*.pdf ... fig8_*.pdf and figS3_*.pdf ... figS6_*.pdf.
-Run after analyze_phase1.py, analyze_phase2.py, analyze_phase3.py and
-run_phase4_edge_mortality.py.
+Reads only the CSV outputs of phases 1-5 (Results/plan/phase*/ and extra/) and writes
+Results/plan/manuscript/fig4_*.pdf ... fig9_*.pdf and figS3_*.pdf ... figS7_*.pdf.
+Run after analyze_phase1.py, analyze_phase2.py, analyze_phase3.py,
+run_phase4_edge_mortality.py and analyze_extra.py.
+Usage: python make_manuscript_figures.py [fig9 figS7 ...]   (no arguments = all)
 """
 
 import os
@@ -347,7 +348,80 @@ def figS6():
     plt.close(fig)
 
 
+# --------------------------------------------------------------------- figure 9 (phase 5)
+def fig9():
+    d = read("extra", "no_resident_grid.csv")
+    t = read("extra", "table_B_no_resident_optimum.csv")
+    h = d[(d.Dd == 0.03) & (d.r3 == -0.3)]
+    mts = sorted(h.mt.unique())
+    fig, axes = plt.subplots(1, 4, figsize=(7.2, 2.4), constrained_layout=True)
+    for ax, n, l in zip(axes[:3], ("Path", "Random_s3", "Complete"), "abc"):
+        for k, mt in enumerate(mts):
+            g = h[(h.Network == n) & (h.mt == mt)].sort_values("Dt")
+            ax.plot(g.Dt, g.AUC_Targeted / g.AUC_None, color=SERIES[k], label=f"$m_t$ = {mt}")
+            o = t[(t.Network == n) & (t.Dd == 0.03) & (t.r3 == -0.3) & (t.mt == mt)].iloc[0]
+            if o.interior:
+                ax.plot(o.Dt_star, o.AUC_T_min / o.AUC_None, "o", ms=3.5, color=SERIES[k],
+                        mfc="white" if o.real_opt else SERIES[k])
+        ax.set_xscale("log"); ax.set_ylim(0.4, 1.02)
+        ax.set_xlabel("$D_t$"); ax.set_title(LABEL[n])
+        ax.set_ylabel("pest AUC, targeted / no release" if l == "a" else "")
+        tag(ax, l, x=-0.22)
+    axes[0].legend(loc="upper left")
+    ax = axes[3]
+    s = t[(t.Dd == 0.03) & (t.r3 == -0.3) & (t.mt > 0) & t.interior]
+    for n in NET_ORDER:
+        g = s[s.Network == n].sort_values("mt")
+        ax.plot(g.mt, g.Dt_star, color=NET_COLOR[n], marker="o", ms=2.5, lw=1, label=SHORT[n])
+    ax.set_xscale("log"); ax.set_yscale("log")
+    plain_log_ticks(ax, "x", [0.05, 0.1, 0.2, 0.4]); plain_log_ticks(ax, "y", [0.003, 0.01, 0.03, 0.1])
+    ax.legend(fontsize=5, ncol=2, loc="upper right", handlelength=1.2)
+    ax.set_xlabel("$m_t$"); ax.set_ylabel("control-optimal $D_t^*$"); ax.set_title("all networks")
+    tag(ax, "d", x=-0.27)
+    fig.savefig(os.path.join(OUT, "fig9_control_optimum_no_resident.pdf"), bbox_inches="tight")
+    plt.close(fig)
+
+
+def figS7():
+    t = read("extra", "table_A_ext_optimum.csv")
+    t["real_max"] = t.real_max.astype(str) == "True"
+    pos = t[(t.mt > 0) & (t.md == 0)]
+    fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.5), constrained_layout=True)
+    for ax, r3, l in zip(axes[:2], (-0.3, -0.45), "ab"):
+        h = pos[(pos.CI == "B") & (pos.Dd == 0.03) & (pos.r3 == r3)]
+        for n in NET_ORDER:
+            g = h[h.Network == n].sort_values("mt")
+            ax.plot(g.mt, g.Dt_star, color=NET_COLOR[n], marker="o", ms=2.5, lw=1, label=SHORT[n])
+        ax.set_xscale("log"); ax.set_yscale("log")
+        plain_log_ticks(ax, "x", [0.05, 0.1, 0.2, 0.4]); plain_log_ticks(ax, "y", [0.1, 0.3, 1, 3])
+        ax.set_xlabel("$m_t$"); ax.set_ylabel("$D_t^*$ (efficiency crest)")
+        ax.set_title(f"IC-B, $D_d$ = 0.03, $r_3$ = {r3}")
+        tag(ax, l, x=-0.25)
+    axes[0].legend(fontsize=5.5, ncol=2, loc="lower left")
+    ax = axes[2]
+    nets = [n for n in NET_ORDER if n in pos.Network.unique()]
+    for i, n in enumerate(nets):
+        for r3, mk in ((-0.3, "o"), (-0.45, "^")):
+            g = pos[pos.real_max & (pos.Network == n) & (pos.r3 == r3)]
+            x = i + (0.18 if r3 == -0.45 else -0.18) + np.linspace(-0.08, 0.08, len(g))
+            ax.scatter(x, g.rule_ratio_kmean, s=6, marker=mk, color=NET_COLOR[n], linewidths=0)
+    ax.axhline(1, color="k", lw=0.8)
+    ax.set_yscale("log"); ax.set_ylim(0.4, 3)
+    plain_log_ticks(ax, "y", [0.5, 1, 2])
+    ax.set_xticks(range(len(nets)), [SHORT[n] for n in nets], rotation=60, ha="right")
+    ax.set_ylabel(r"$D_t^*m_t\langle k\rangle/|r_3|$")
+    ax.legend(handles=[Line2D([], [], ls="", marker="o", color="0.3", ms=3, label="$r_3$ = -0.3"),
+                       Line2D([], [], ls="", marker="^", color="0.3", ms=3, label="$r_3$ = -0.45")],
+              loc="upper right")
+    tag(ax, "c", x=-0.25)
+    fig.savefig(os.path.join(OUT, "figS7_crest_rule_extended_grid.pdf"))
+    plt.close(fig)
+
+
+FIGURES = {f.__name__: f for f in (fig4, fig5, fig6, fig7, fig8, fig9, figS3, figS4, figS5, figS6, figS7)}
+
 if __name__ == "__main__":
-    for f in (fig4, fig5, fig6, fig7, fig8, figS3, figS4, figS5, figS6):
-        f()
-        print("done", f.__name__)
+    import sys
+    for name in sys.argv[1:] or FIGURES:
+        FIGURES[name]()
+        print("done", name)

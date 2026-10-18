@@ -23,21 +23,70 @@ def laplacian(graph):
     return nx.laplacian_matrix(graph, nodelist=sorted(graph.nodes())).toarray().astype(float)
 
 
-def network_rhs(L, Dd, Dt, params):
+def adjacency(graph):
+    """Adjacency matrix A (rows/columns in vertex order). L = K - A."""
+    return nx.to_numpy_array(graph, nodelist=sorted(graph.nodes()), dtype=float)
+
+
+def _as_mortality(m):
+    """None when m is zero (scalar or all-zero matrix), else float or array."""
+    if np.ndim(m) == 0:
+        return float(m) if m else None
+    m = np.asarray(m, dtype=float)
+    return m if np.any(m) else None
+
+
+def network_rhs(L, Dd, Dt, params, md=0.0, mt=0.0, A=None, local=True):
+    """Right-hand side of the network system.
+
+    Dispersal of x1 and x3 with transit mortality (plan, Fase 0, cambio 1):
+        x1' = f1(x) - Dd (L + md A) x1,     x3' = f3(x) - Dt (L + mt A) x3.
+    An individual leaving node i towards j dies on the way with probability m;
+    with md = mt = 0 the original model is recovered exactly (the extra term is
+    not even evaluated). A must be given when md or mt is nonzero.
+    md and mt may also be n x n matrices m_ij (edge-dependent mortality, Fase 4):
+    the term then is D (L + m * A) x with the elementwise product m_ij A_ij.
+    local=False switches the local dynamics off (only dispersal), which is used
+    by the mass-balance test of Fase 0."""
     n = L.shape[0]
+    md, mt = _as_mortality(md), _as_mortality(mt)
+    if (md is not None or mt is not None) and A is None:
+        raise ValueError("adjacency matrix A is required when md or mt is nonzero")
+    if md is not None:
+        Md = L + md * A
+
+        def disp1(y1):
+            return Dd * (Md @ y1)
+    else:
+        def disp1(y1):
+            return Dd * (L @ y1)
+    if mt is not None:
+        Mt = L + mt * A
+
+        def disp3(y3):
+            return Dt * (Mt @ y3)
+    else:
+        def disp3(y3):
+            return Dt * (L @ y3)
 
     def f(t, y):
         y1, y2, y3, y4 = y[:n], y[n:2 * n], y[2 * n:3 * n], y[3 * n:]
-        f1, f2, f3, f4 = local_field(params, y1, y2, y3, y4)
-        return np.concatenate((f1 - Dd * (L @ y1), f2, f3 - Dt * (L @ y3), f4))
+        if local:
+            f1, f2, f3, f4 = local_field(params, y1, y2, y3, y4)
+        else:
+            f1 = f2 = f3 = f4 = np.zeros(n)
+        return np.concatenate((f1 - disp1(y1), f2, f3 - disp3(y3), f4))
 
     return f
 
 
-def solve_network_data(graph, Dd, Dt, delta, T, params, init, release_nodes="All"):
+def solve_network_data(graph, Dd, Dt, delta, T, params, init, release_nodes="All",
+                       md=0.0, mt=0.0, local=True):
     """SolveNetworkData[graph, Dd, Dt, delta, T, params, {Di0,B0,x30,x40,tt}, releaseNodes].
 
-    release_nodes: "All" or a list of 0-based node indices ([] = no releases)."""
+    release_nodes: "All" or a list of 0-based node indices ([] = no releases).
+    md, mt: transit mortality of the psyllid and of the parasitoid (default 0,
+    which is the original model). local=False switches off the local dynamics."""
     Di0, B0, x30, x40, tt = init
     L = laplacian(graph)
     n = graph.number_of_nodes()
@@ -55,9 +104,12 @@ def solve_network_data(graph, Dd, Dt, delta, T, params, init, release_nodes="All
             return y
         jumps = release_times(T, tt)
 
-    sol = solve_impulsive(network_rhs(L, Dd, Dt, params), y0, (0.0, float(tt)), jumps, jump)
+    A = adjacency(graph) if (_as_mortality(md) is not None or _as_mortality(mt) is not None) else None
+    rhs = network_rhs(L, Dd, Dt, params, md, mt, A, local)
+    sol = solve_impulsive(rhs, y0, (0.0, float(tt)), jumps, jump)
     return {"Solution": sol, "Graph": graph, "N": n, "Dd": Dd, "Dt": Dt,
-            "Delta": delta, "T": T, "tt": tt, "ReleaseNodes": targets}
+            "Delta": delta, "T": T, "tt": tt, "ReleaseNodes": targets,
+            "md": md, "mt": mt, "NumReleases": len(jumps)}
 
 
 # ---------- Topology generators ----------

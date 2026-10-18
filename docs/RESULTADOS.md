@@ -1,6 +1,6 @@
 # Resultados fase por fase
 
-Todas las rutas son relativas a `Model/Python/Results/plan/`. Los valores fijos, salvo que se indique otra cosa, son δ = 35, T = 15, t_max = 100, n = 8 nodos, los parámetros locales de la tabla 1 del manuscrito y r₃ = −0,3. E_T y E_U están en unidades de AUC de plaga evitado por parasitoide liberado.
+Las fases 0 a 4 son las del plan de trabajo. La sección 3d y la fase 5 se añadieron después de la revisión del 17 de octubre de 2026, y sus salidas están en `extra/`. Todas las rutas son relativas a `Model/Python/Results/plan/`. Los valores fijos, salvo que se indique otra cosa, son δ = 35, T = 15, t_max = 100, n = 8 nodos, los parámetros locales de la tabla 1 del manuscrito y r₃ = −0,3. E_T y E_U están en unidades de AUC de plaga evitado por parasitoide liberado.
 
 ---
 
@@ -74,6 +74,8 @@ El ajuste es un polinomio cúbico en log₁₀ de la candidata. Para el par (Π,
 
 Con E_T/E_U como respuesta (`table1_1_cv_r2_Eratio.csv`) los R² suben (0,78 con (Π, Π_t) en CI-A), pero ninguna candidata llega a 0,9.
 
+**Respuesta relativa (añadido en la revisión del 17 de octubre).** Si la respuesta es la fracción de plaga evitada, (AUC_None − AUC_T)/AUC_None, en lugar de E_T (`extra/table_C_collapse_relative.csv`), en CI-B el R² validado de Π sube de 0,01 a 0,60 y el de (Π, Π_t) de 0,03 a 0,65. Los dos superan a D_t/D_d (0,49) por más de 0,1, pero no llegan a 0,9. En CI-A todas las candidatas quedan con R² negativo. El resultado sigue siendo negativo según el criterio del plan, aunque en parte depende de medir la eficiencia en AUC absoluto.
+
 **Consecuencia.** Según el plan, la fase 2 se hace igual y este resultado negativo se reporta. Si se busca una variable que generalice, habría que incluir algo que mida cuánta plaga hay para evitar (el AUC sin liberación, o b₃₁x̄₁/|r₃|), no solo escalas de tiempo de dispersión.
 
 ---
@@ -131,7 +133,7 @@ La figura corresponde a CI-B, r₃ = −0,3 y D_d = 0,03. La versión con CI-A e
 
 El análisis que explica la cresta no estaba en el plan, pero es necesario para interpretarla.
 
-- El AUC de plaga **con** liberación dirigida (tercer panel) crece de forma monótona con D_t cuando m_t > 0. No tiene un mínimo en la cresta. En las 384 curvas con m_t > 0, el mínimo interior del AUC con liberación, cuando existe, mide 0,9 % en la mediana.
+- El AUC de plaga **con** liberación dirigida (tercer panel) crece de forma monótona con D_t cuando m_t > 0. No tiene un mínimo en la cresta. En las 384 curvas con m_t > 0, el mínimo interior del AUC con liberación, cuando existe, mide 0,9 % en la mediana. **Excepción:** en la trayectoria y el ciclo con CI-B ese mínimo sí es apreciable, hasta 15 %, y 31 curvas pasan del 5 %. El mínimo está en D_t ≈ 0,02 a 0,1, muy lejos de la cresta de E_T. La fase 5 muestra que, sin parasitoide residente, ese mínimo aparece en casi todas las redes.
 - El AUC de plaga **sin** liberación (segundo panel) se dispara antes, porque el parasitoide residente colapsa (cuarto panel). En la cresta, el AUC del parasitoide sin liberaciones es entre 2 y 40 % del que tiene con m_t = 0 y el mismo D_t, con mediana del 20 %.
 - E_T es la diferencia de las dos curvas dividida por Q. Es máxima justo donde el residente ya colapsó en la corrida de referencia pero las liberaciones todavía logran sostener parasitoides. Más a la derecha también mueren los liberados y E_T cae a casi 0.
 
@@ -204,6 +206,28 @@ Las cifras son el máximo exponente de Lyapunov transversal, con D_d = D_t = 0,0
 
 **Se cumple, así que la fase 4 se ejecutó.**
 
+### 3d. Malla de D_t extendida (añadido en la revisión del 17 de octubre)
+
+**Motivo.** La malla de 3a termina en D_t = 1, y ahí quedaban 255 de las 384 curvas con m_t > 0. Con m_t = 0,05 no había ningún máximo real, 13 de las 19 pendientes de la compuerta salían de solo dos puntos y 15 de ellas eran con r₃ = −0,45.
+
+**Diseño.** Las mismas condiciones de 3a (8 redes, CI-A y CI-B, 3 valores de D_d, 2 de r₃ y 5 de m_t), con seis valores más de D_t que siguen el mismo paso de 0,25 décadas, de 1,78 a 31,6. Son 2880 combinaciones y 8640 corridas (`run_extra_phase3a_extended.py`). Junto con `phase3a_grid.csv` dan 19 valores de D_t en [10⁻³; 31,6]. Las salidas están en `extra/`.
+
+![](../Model/Python/Results/plan/extra/figA_ext_rule.png)
+
+- Las 384 curvas con m_t > 0 tienen un máximo interior con prominencia > 5 %. Ninguna queda en el borde. Con m_t = 0 sigue sin haber ningún máximo (0 de 96).
+- Cada pendiente de log D_t* contra log m_t se ajusta ahora con 4 puntos (96 ajustes). La mediana es −0,92 (rango intercuartílico −1,04 a −0,87), y −0,89 en CI-B con r₃ = −0,3. **D_t* ∝ 1/m_t se confirma con datos completos.**
+- El grado medio funciona claramente mejor que el grado del foco. Con ⟨k⟩, la desviación estándar de log₁₀ del cociente D_t*·m_t·⟨k⟩/|r₃| es de 0,04 a 0,06 dentro de cada (CI, r₃). Con k_s es de 0,24 a 0,25.
+- La pérdida en tránsito en la cresta, D_t*·m_t·⟨k⟩, es casi constante para cada r₃ y baja cuando |r₃| sube (`extra/table_A_ext_rule.csv`):
+
+| CI | r₃ | D_t*·m_t·⟨k⟩ (mediana) | D_t*·m_t·⟨k⟩/\|r₃\| (rango) |
+|---|---|---|---|
+| B | −0,30 | 0,475 | 1,58 (1,09–2,12) |
+| B | −0,45 | 0,325 | 0,72 (0,56–0,91) |
+| A | −0,30 | 0,532 | 1,78 (1,50–2,22) |
+| A | −0,45 | 0,397 | 0,88 (0,73–1,18) |
+
+Cuando se citen en el texto, conviene usar estas cifras en lugar de las de la tabla de la figura 3.2. Aquella solo incluía los 127 máximos que caían dentro de la malla, que estaban sesgados hacia m_t grande y r₃ = −0,45. La regla del plan acierta en la escala y en la dependencia 1/m_t, pero no en la dependencia con r₃.
+
 ---
 
 ## Fase 4. Mortalidad que depende de la arista
@@ -225,3 +249,21 @@ Las 30 curvas tienen un máximo interior con prominencia de 89 a 98 %. Las const
 - La versión con el grado medio, (3), es claramente mejor. Dentro de cada ℓ su correlación es de 0,88 a 0,97, y después de corregir la constante la dispersión residual es de solo 6 %. D_t* depende poco del grado del foco. Dentro de cada ℓ, k_s varía de 2 a 6 pero D_t* varía menos de un factor 1,8.
 
 **Precaución.** Con m_ij heterogéneo no hay estado sincrónico en ninguna red, así que el análisis de estabilidad no se puede repetir en esta fase.
+
+---
+
+## Fase 5 (añadida en la revisión del 17 de octubre). Óptimo de control sin parasitoide residente
+
+**Motivo.** En el plan todos los nodos empiezan con x₃ = 15. Con mortalidad en tránsito, ese residente colapsa en la corrida sin liberación. Por eso la cresta de E_T de la fase 3 es un óptimo de eficiencia frente a un contrafactual que se deteriora, y no un mínimo de plaga (figura 3.5). Esta fase pregunta si existe un D_t que **deje menos plaga** cuando el parasitoide se introduce donde todavía no está establecido.
+
+**Diseño.** x₃(0) = 0 en todos los nodos y la plaga como en CI-B (la condición se registra como `CI = B0`). Se usan las 8 redes, D_t en 25 valores logarítmicos en [10⁻³; 10], m_t ∈ {0; 0,05; 0,1; 0,2; 0,4}, D_d ∈ {0,01; 0,03; 0,1}, r₃ ∈ {−0,3; −0,45}, m_d = 0 y las tres estrategias. Son 6000 combinaciones y 18 000 corridas (`run_extra_no_resident.py`), con salidas en `extra/`. La corrida sin liberación no depende de D_t (su variación es exactamente 0), así que **un máximo de E_T es un mínimo real del AUC de plaga**.
+
+![](../Model/Python/Results/plan/extra/figB_no_resident.png)
+
+- Hay un mínimo interior del AUC con liberación dirigida en 236 de las 240 curvas.
+- En 110 curvas ese mínimo es más de 5 % mejor que los dos extremos de la malla. Por red: trayectoria 27, ciclo 25, aleatorias 42, libre de escala 7, estrella 8, completo 1.
+- El óptimo es **asimétrico**. Con m_t > 0, dispersarse demasiado deja entre 44 y 47 % más plaga (mediana), porque los parasitoides liberados mueren en tránsito. Dispersarse poco cuesta entre 3 y 7 % (mediana), y hasta 18 % en la trayectoria. Sin costo (m_t = 0) el máximo de la malla tiende a una meseta en D_t alto, salvo en la trayectoria.
+- D_t* baja con m_t con una pendiente log–log de −0,73 (rango intercuartílico −0,76 a −0,67), menos pronunciada que la de la cresta de eficiencia (−0,92). La pérdida en tránsito en el óptimo, D_t*·m_t·⟨k⟩, vale entre 0,005 y 0,02, unas 30 veces menos que en la cresta de la fase 3 (`extra/table_B_no_resident_*.csv`).
+- Ejemplo con D_d = 0,03 y r₃ = −0,3: D_t* va de 0,093 a 0,027 en la trayectoria y de 0,023 a 0,004 en el grafo completo, para m_t de 0,05 a 0,4. En la trayectoria eso deja 14 a 18 % menos plaga que con D_t = 10⁻³ y 51 a 54 % menos que con D_t = 10.
+
+**Interpretación.** Cuando el parasitoide se introduce donde no estaba establecido, hay un D_t que minimiza la plaga y baja con el costo de dispersión, como proponía la hipótesis Goldilocks. Es un óptimo de **control**, distinto de la cresta de **eficiencia** de la fase 3, y está a una escala de D_t mucho menor. El beneficio frente a un parasitoide poco móvil es moderado y mayor en redes alargadas y poco conectadas. El costo de un parasitoide demasiado móvil es grande en todas las redes.

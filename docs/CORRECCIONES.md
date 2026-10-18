@@ -39,6 +39,18 @@
 - **Malla de 3b.** Se tomaron los 7 valores de D_t de la malla de 3a que caen en [0,03; 1], que es donde está la cresta para todo m_t > 0, con m_d ∈ {0,1; 0,2} y m_t ∈ {0,05; 0,1; 0,2; 0,4}.
 - **Fase 4.** Se usó un radio de conexión de 0,5, ℓ ∈ {0,5; 1; 2} (mortalidades medias 0,47, 0,28 y 0,15, en el mismo rango que la fase 3), D_d = 0,03 y D_t en [0,03; 3], porque la cresta puede pasar de 1 cuando m es pequeño.
 
+## Revisión del 17 de octubre de 2026
+
+Se revisó todo el código del plan (integrador con mortalidad, ejecutor, análisis de las fases 1 a 4, fase 3c, fase 4, pruebas y figuras del manuscrito). Se recalcularon desde los CSV todas las cifras de `RESULTADOS.md`. **No se encontraron errores de código** y todas las cifras coinciden. Sí se encontraron dos problemas de interpretación y uno de diseño:
+
+**12. Afirmación demasiado general sobre el AUC con liberación.** El README decía que, con m_t > 0, "el D_t que deja menos plaga es el más bajo". Eso es falso en la trayectoria y el ciclo con CI-B, donde el AUC con liberación dirigida tiene un mínimo interior de hasta 15 % (31 curvas pasan del 5 %). La figura 3.5 muestra solo el grafo completo, que es justo donde la curva es plana. *Corrección:* se cambió el texto del README y de `RESULTADOS.md`, y se añadió la fase 5.
+
+**13. La malla de D_t de la fase 3 era demasiado corta.** Terminaba en D_t = 1, donde quedaba el máximo de 255 de las 384 curvas con m_t > 0. Por eso 13 de las 19 pendientes de la compuerta usaban dos puntos y la constante de la regla estaba sesgada hacia m_t grande y r₃ = −0,45. *Corrección:* se extendió la malla hasta 31,6 sin modificar `phase3a_grid.csv` (sección 3d de `RESULTADOS.md`). El resultado se confirma y queda más sólido (pendiente −0,92 con 4 puntos en 96 condiciones).
+
+**14. La cresta de E_T depende del parasitoide residente.** No es un error, pero condiciona la lectura. Como todos los nodos empiezan con x₃ = 15, el contrafactual sin liberación se deteriora con D_t cuando m_t > 0. *Corrección:* se añadió la fase 5 (x₃(0) = 0), donde el óptimo de D_t es un mínimo real de plaga.
+
+Los resultados nuevos se escribieron en `Model/Python/Results/plan/extra/` con scripts propios (`run_extra_*.py`, `analyze_extra.py`). No se sobrescribió ninguna salida anterior.
+
 ## Incidente durante la ejecución
 
 Mientras corría la fase 3b, el archivo `phase3b_grid.csv` se movió de carpeta y luego se devolvió a su lugar. El proceso siguió escribiendo en el mismo archivo (mismo sistema de archivos, mismo descriptor) y el CSV final tiene las 1344 filas esperadas sin duplicados. Se verificó con `wc -l` y con las claves de combinación.
