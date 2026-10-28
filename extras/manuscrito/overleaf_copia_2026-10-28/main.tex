@@ -1,0 +1,85 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{setspace}
+\usepackage[mathlines]{lineno}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage[labelfont=bf,font=small]{caption}
+\usepackage[numbers,sort&compress,square]{natbib}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc}
+\usepackage{titlesec}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\renewcommand{\thesubsection}{(\alph{subsection})}
+\renewcommand{\thesubsubsection}{(\roman{subsubsection})}
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\itshape}{\thesubsubsection}{0.6em}{}
+
+\newtheorem{proposition}{Proposition}
+\newcommand{\todo}[1]{\textcolor{red}{[#1]}}
+\newcommand{\Dd}{D_{\!d}}
+\newcommand{\Dt}{D_{\!t}}
+
+\onehalfspacing
+\linenumbers
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Dispersal costs determine when network structure matters for augmentative biological control of \textit{Diaphorina citri}\par}
+\vspace{1em}
+Sebasti\'an Rodr\'{\i}guez-Falc\'on$^{1}$, Heliana Arias-Castro$^{2}$, Javier Galeano$^{3}$ and Luciano Stucchi$^{4}$\\[0.8em]
+{\small
+$^{1}$Pontificia Universidad Cat\'olica del Per\'u, Lima, Peru\\
+$^{2}$Universidad del Valle, Calle 13 100-00, Cali 760032, Colombia\\
+$^{3}$Grupo Interdisciplinar de Sistemas Complejos (GISC), Universidad Polit\'ecnica de Madrid, Avda.\ Puerta de Hierro 2-4, 28040 Madrid, Spain\\
+$^{4}$Universidad del Pac\'{\i}fico, Lima, Peru}\\[0.8em]
+{\small ORCID IDs: SR-F, 0009-0008-1456-9501; HA-C, 0000-0003-0647-500X; JG, 0000-0003-0706-4317; LS, 0000-0002-2823-0778}
+\end{center}
+
+\noindent\textbf{Subject Areas:} ecology, theoretical biology, computational biology\\
+\textbf{Keywords:} \textit{Diaphorina citri}, \textit{Tamarixia radiata}, augmentative biological control, metapopulation networks, transit mortality, master stability function\\
+\textbf{Author for correspondence:} Luciano Stucchi\\
+\textbf{e-mail:} \href{mailto:stucchi_l@up.edu.pe}{stucchi\_l@up.edu.pe}
+
+\input{sections/abstract}
+\input{sections/introduction}
+\input{sections/methods}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/conclusions}
+
+\section*{Ethics}
+This work did not require ethical approval from a human subject or animal welfare committee.
+
+\section*{Data accessibility}
+The Python code and the CSV outputs of every experiment are available at \todo{repository, DOI}. The repository includes the scripts that regenerate all figures and derived quantities from those outputs.
+
+\section*{Declaration of AI use}
+AI-assisted tools (Claude, Anthropic) were used to edit the language of the manuscript, to check bibliographic references, and to check the consistency of the numbers reported in the text with the stored results. The authors take full responsibility for the manuscript.
+
+\section*{Authors' contributions}
+\todo{CRediT statement.}
+
+\section*{Conflict of interest declaration}
+We declare we have no competing interests.
+
+\section*{Funding}
+\todo{Funding statement.}
+
+\section*{Acknowledgements}
+\todo{Acknowledgements.}
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\end{document}

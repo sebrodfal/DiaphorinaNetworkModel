@@ -7,14 +7,18 @@ run adds the six next values of the same grid (step 0.25 decades): D_t = 10^0.25
 phase3a_grid.csv (read only, not modified) it gives 19 values in [1e-3, 31.6].
 
 6 x 5 x 3 x 8 x 2 x 2 = 2880 combinations = 8640 runs (None, Uniform, Targeted).
-Output: Results/plan/extra/phase3a_ext_grid.csv (resumable, like the phase runs)
+Output: Results/phase3a_ext_grid.csv next to this script (resumable, like the phase runs).
+The model code is imported from code/.
 """
 
 import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, "..", "..", "code"))
 
 import numpy as np
 
-from common import results_path
 import plan_common as pc
 from run_phase3_transit_mortality import DD_GRID, MT_GRID, R3_GRID
 
@@ -28,4 +32,4 @@ def specs():
 
 
 if __name__ == "__main__":
-    pc.run_specs(specs(), results_path(os.path.join("plan", "extra", "phase3a_ext_grid.csv")))
+    pc.run_specs(specs(), os.path.join(HERE, "Results", "phase3a_ext_grid.csv"))

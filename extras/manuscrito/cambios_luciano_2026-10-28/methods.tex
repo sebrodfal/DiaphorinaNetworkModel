@@ -1,0 +1,199 @@
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Local model}
+\label{sec:local}
+
+Each patch (node) of the network carries four state variables, namely the density of the Asian citrus psyllid \emph{Diaphorina citri} ($x_1$), the availability of young shoots or flush on which the psyllid feeds and breeds ($x_2$), the density of the ectoparasitoid \emph{Tamarixia radiata} ($x_3$), and an index of plant vigour ($x_4$). The psyllid is the vector of the bacteria associated with huanglongbing \citep{grafton2013,hall2013}, and \emph{T.~radiata} is the parasitoid most widely used for its augmentative control \citep{chen2014}. All quantities are in arbitrary units and time is measured in arbitrary units (a.u.). The within-patch dynamics are those of the single-node model \citep{RodriguezFalcon2026}, which we write as
+\begin{align}
+\dot x_1 &= x_1\bigl[r_1 + \beta_1 - (a_1 + c_1\beta_1)\,x_1\bigr], & \beta_1 &= b_{12}x_2 + b_{13}x_3,\nonumber\\
+\dot x_2 &= x_2\bigl[r_2 + \beta_2 - (a_2 + c_2\beta_2)\,x_2\bigr], & \beta_2 &= b_{21}x_1 + b_{24}x_4,\label{eq:local}\\
+\dot x_3 &= x_3\bigl[r_3 + \beta_3 - (a_3 + c_3\beta_3)\,x_3\bigr], & \beta_3 &= b_{31}x_1,\nonumber\\
+\dot x_4 &= x_4\bigl[r_4 + \beta_4 - (a_4 + c_4\beta_4)\,x_4\bigr], & \beta_4 &= b_{42}x_2.\nonumber
+\end{align}
+Here $r_i$ is the per capita growth rate of variable $i$ in the absence of interactions, $b_{ij}$ is the effect of variable $j$ on the per capita growth of variable $i$, and the crowding term $a_i + c_i\beta_i$ lets self-limitation depend on the interaction input $\beta_i$. The interaction web is shown in figure~\ref{fig:scheme}\emph{a}. Flush benefits the psyllid ($b_{12}>0$) and is damaged by it ($b_{21}<0$). Parasitism lowers psyllid growth ($b_{13}<0$) and sustains the parasitoid ($b_{31}>0$). Vigour promotes flushing ($b_{24}>0$) and is drawn down by it ($b_{42}<0$). Only vigour has a positive intrinsic rate. Parameter values are listed in table~\ref{tab:params} and were used unchanged in every experiment except the sensitivity analysis.
+
+The crowding coefficients are not guaranteed to be positive. With the values of table~\ref{tab:params}, $a_4 + c_4 b_{42}x_2 < 0$ whenever $x_2 > 1.54$, which held at every sampled time of the single-node trajectories we checked (initial state $(50,10,15,30)$, with and without releases). Boundedness of $x_4$ therefore rests on the term $b_{42}x_2$ in its growth rate and not on self-limitation. The psyllid coefficient $a_1 + c_1\beta_1$ stayed positive under the reference release schedule but became negative during 15\% of the horizon under the most intense schedule tested ($\delta=50$, $T=5$).
+
+\begin{table}[t]
+\centering
+\caption{Parameters of the local model (equation~\eqref{eq:local}). The same crowding coefficients $a_i = 5.55\times10^{-4}$ and $c_i = 5\times10^{-3}$ are used for all four variables.}
+\label{tab:params}
+\small
+\begin{tabular}{llll}
+\toprule
+variable & intrinsic rate & interaction coefficients & crowding \\
+\midrule
+$x_1$ psyllid     & $r_1=-0.20$ & $b_{12}=0.040$, $b_{13}=-0.010$ & $a_1$, $c_1$\\
+$x_2$ flush       & $r_2=-0.72$ & $b_{21}=-0.010$, $b_{24}=0.054$ & $a_2$, $c_2$\\
+$x_3$ parasitoid  & $r_3=-0.30$ & $b_{31}=0.010$                  & $a_3$, $c_3$\\
+$x_4$ plant vigour& $r_4=0.72$  & $b_{42}=-0.072$                 & $a_4$, $c_4$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Network coupling and parasitoid releases}
+\label{sec:network}
+
+Patches are the $n=8$ nodes of an undirected, unweighted graph with adjacency matrix $A$ and Laplacian $L = K - A$, where $K$ is the diagonal matrix of node degrees $k_i$. Psyllids and parasitoids move between neighbouring patches by linear diffusion with rates $\Dd$ and $\Dt$, while flush and vigour belong to the host plants and do not move. Individuals may die while moving between patches. We write $m_d$ and $m_t$ for the probabilities that a psyllid or a parasitoid leaving a patch dies before reaching the neighbouring one. Writing $f_k$ for the right-hand side of the $k$th line of equation~\eqref{eq:local}, the network model is
+\begin{equation}
+\begin{aligned}
+\dot x_{1,i} &= f_1(\mathbf{x}_i) - \Dd\sum_{j} \bigl(L_{ij} + m_d A_{ij}\bigr)\,x_{1,j}, &\qquad \dot x_{2,i} &= f_2(\mathbf{x}_i),\\
+\dot x_{3,i} &= f_3(\mathbf{x}_i) - \Dt\sum_{j} \bigl(L_{ij} + m_t A_{ij}\bigr)\,x_{3,j}, &\qquad \dot x_{4,i} &= f_4(\mathbf{x}_i),
+\end{aligned}
+\label{eq:network}
+\end{equation}
+for $i=1,\dots,n$. Emigration from patch $i$ occurs at rate $D k_i x_i$ whatever the value of $m$, and immigration from each neighbour $j$ is reduced from $D x_j$ to $(1-m)D x_j$. Summing over patches gives $\tfrac{\mathrm{d}}{\mathrm{d}t}\sum_i x_i = \sum_i f(\mathbf{x}_i) - D\,m\sum_i k_i x_i$ for each dispersing variable. Transit mortality therefore removes individuals at a rate proportional to the degree of the patch they leave. With $m_d = m_t = 0$, which is the case in Experiments~2, 3, 6 and~7, the rows of $L$ sum to zero and dispersal conserves the network totals of $x_1$ and $x_3$. In Experiment~11 (section~\ref{sec:exp-transit}) the scalar $m_t$ is replaced by an edge-specific probability $m_{ij}$, so that the term $m_t A_{ij}$ becomes $m_{ij}A_{ij}$.
+
+Augmentative control is represented as instantaneous releases of $\delta$ parasitoids at the times $t_k = kT$, $k = 1,2,\dots$, into every node of a release set $\mathcal{R}$,
+\begin{equation}
+x_{3,i}(t_k^{+}) = x_{3,i}(t_k) + \delta,\qquad i\in\mathcal{R}.
+\label{eq:impulse}
+\end{equation}
+The first release occurs at $t=T$, not at $t=0$. Releases are applied only for $t_k < t_{\max}$, so a simulation of length $t_{\max}$ receives $N(T) = \lceil t_{\max}/T\rceil - 1$ release events. We compared three strategies. \emph{No release} sets $\delta = 0$. \emph{Uniform} releases into all $n$ patches. \emph{Targeted at source} releases only into the outbreak patch defined below. For a given schedule a uniform programme therefore uses $n$ times as many parasitoids as a targeted one, and the total released is $Q = \delta\,N(T)\,|\mathcal{R}|$. Impulsive release models of this kind are standard in the theory of integrated pest management \citep{tang2008}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  var/.style={circle, draw, thick, minimum size=10mm, font=\small},
+  posarr/.style={-{Stealth[length=2.2mm]}, thick, color=black!75},
+  negarr/.style={-{Bar[width=2.4mm]}, thick, color=red!70!black},
+  node distance=18mm]
+  \node[var] (V) {$x_4$};
+  \node[var, right=of V] (S) {$x_2$};
+  \node[var, right=of S] (D) {$x_1$};
+  \node[var, right=of D] (P) {$x_3$};
+  \draw[posarr] (V) to[bend left=25] node[above, font=\scriptsize]{$b_{24}$} (S);
+  \draw[negarr] (S) to[bend left=25] node[below, font=\scriptsize]{$b_{42}$} (V);
+  \draw[posarr] (S) to[bend left=25] node[above, font=\scriptsize]{$b_{12}$} (D);
+  \draw[negarr] (D) to[bend left=25] node[below, font=\scriptsize]{$b_{21}$} (S);
+  \draw[posarr] (D) to[bend left=25] node[above, font=\scriptsize]{$b_{31}$} (P);
+  \draw[negarr] (P) to[bend left=25] node[below, font=\scriptsize]{$b_{13}$} (D);
+  \node[font=\scriptsize, below=1mm of V] {vigour};
+  \node[font=\scriptsize, below=1mm of S] {flush};
+  \node[font=\scriptsize, below=1mm of D] {psyllid};
+  \node[font=\scriptsize, below=1mm of P] {parasitoid};
+  \node[font=\bfseries] at ($(V)+(-1.1,1.0)$) {(a)};
+  \begin{scope}[xshift=11.3cm, yshift=0cm]
+    \node[font=\bfseries] at (-1.9,1.0) {(b)};
+    \foreach \k in {0,...,7}{
+      \node[circle, draw, thick, minimum size=4.5mm, inner sep=0pt, fill=white] (n\k) at ({90-45*\k}:1.3) {};
+    }
+    \node[circle, draw, thick, minimum size=4.5mm, inner sep=0pt, fill=orange!60] at (n0) {};
+    \foreach \a/\b in {0/1,1/2,2/3,3/4,4/5,5/6,6/7,7/0,0/3,0/5,2/6}{\draw (n\a) -- (n\b);}
+    \draw[-{Stealth[length=2mm]}, very thick, color=green!45!black] ($(n0)+(0,0.9)$) -- (n0);
+    \node[font=\scriptsize, align=center, above=8mm of n0] {release $\delta$ every $T$};
+    \node[font=\scriptsize, align=left, anchor=west] at (1.75,-0.2) {$x_1$: rate $D_d$\\ $x_3$: rate $D_t$\\ $x_2, x_4$: sessile};
+  \end{scope}
+\end{tikzpicture}
+\caption{Model structure. (\emph{a}) Interaction web inside one patch. Arrows are positive effects on per capita growth and bars are negative effects. (\emph{b}) Patches are the nodes of a graph. Psyllids and parasitoids disperse along edges, flush and vigour do not. The shaded node is the outbreak patch, which receives all releases under the targeted strategy. The graph drawn is illustrative only.}
+\label{fig:scheme}
+\end{figure}
+
+\subsection{Network topologies}
+\label{sec:topologies}
+
+We used seven graph families on $n = 8$ nodes. Four are deterministic: the path, the cycle, the star with the outbreak patch at the hub, and the complete graph. Three are stochastic: Gilbert random graphs $G(n,p)$ with $p = 0.4$ \citep{gilbert1959}, Watts--Strogatz small-world graphs obtained from a ring in which each node is joined to its four nearest neighbours by rewiring each edge with probability $0.2$ \citep{watts1998}, and Barab\'asi--Albert graphs with two edges per new node \citep{barabasi1999}. Graphs were generated with NetworkX \citep{hagberg2008} using seed 1 unless stated otherwise. Experiment~3 drew ten independent instances (seeds 1--10) of each stochastic family, giving 34 distinct graphs in total. All 34 were connected, and their algebraic connectivity $\lambda_2(L)$ \citep{fiedler1973} ranged from 0.152 (path) to 8 (complete graph). The outbreak patch is node 1 in every graph. Its degree, which we call the source degree, varied between 1 and 7 across the 34 graphs.
+
+\subsection{Initial conditions and numerical solution}
+\label{sec:numerics}
+
+All network experiments simulate an outbreak over $t_{\max} = 100$ a.u., unless stated otherwise. We used two initial conditions. In IC-A, which is the condition of Experiments~2, 3, 6 and~7, the outbreak patch starts with $x_1 = 200$ and the other seven patches with $x_1 = 20$, so the outbreak arises on a background infestation. In IC-B, a point introduction, the outbreak patch starts with $x_1 = 200$ and the other patches with $x_1 = 0$. Because $x_1 = 0$ is invariant for the local dynamics, under IC-B the psyllid reaches the other patches only by dispersal, and $\Dd = 0$ is excluded. In both conditions every patch starts with $x_2 = 10$, $x_3 = 15$ and $x_4 = 30$.
+
+Equations~\eqref{eq:network} were integrated with the explicit Runge--Kutta method of order 8(5,3) of Dormand and Prince as implemented in SciPy \citep{hairer1993,virtanen2020}, with relative and absolute tolerances $10^{-10}$ and $10^{-12}$. The parameter sweeps of Experiments~8--11 used tolerances of $10^{-8}$ and $10^{-10}$. On four test configurations spanning $\Dt$ from $10^{-3}$ to 1, this changed the efficiencies defined below by less than $10^{-8}$ in relative terms and reduced computing time by about 40\%. Releases were handled exactly by integrating the smooth system between consecutive release times and applying the jump~\eqref{eq:impulse} to the end state of each piece. The resulting solution is right-continuous, so its value at a release time is the post-release state. Time integrals were computed from the dense output of the integrator by eight-point Gauss--Legendre quadrature on every internal step, which is exact for the degree-7 interpolant. As a consistency check we set $\Dd = \Dt = 0$ and $\delta = 0$ on a three-node path with identical initial states. The maximum absolute deviation of each node from an independently coded single-patch solution over $t\in[0,100]$ was $1.8\times10^{-13}$ for $x_1$ and $6.0\times10^{-14}$ for $x_3$, and the three nodes were identical to machine precision.
+
+The version of the code with transit mortality passed four further checks before it was used. (i) With $m_d = m_t = 0$ it reproduced the network AUC of the 336 runs of Experiment~2 with a maximum relative error of $4.1\times10^{-16}$. (ii) With the local dynamics switched off, the total of each dispersing variable decayed at the rate $D\,m\sum_i k_i x_i$ derived above, with relative errors below $1.2\times10^{-15}$ in the right-hand side and $4.5\times10^{-11}$ in the integrated totals, over five graphs and three pairs $(D, m)$. (iii) With $D = 0$, every value of $m$ gave results identical to $m = 0$. (iv) With $m = 0$ the star and the complete graph gave the same AUC to within $10^{-14}$ under both initial conditions and all strategies, as required by proposition~\ref{prop:hub}. An edge-specific matrix $m_{ij}$ with all entries equal to $m$ also reproduced the scalar case.
+
+\subsection{Response variables}
+\label{sec:metrics}
+
+The primary response is the network pest load, the area under the psyllid curves summed over patches,
+\begin{equation}
+\mathrm{AUC} = \sum_{i=1}^{n}\int_0^{t_{\max}} x_{1,i}(t)\,\mathrm{d}t .
+\end{equation}
+We also report the mean psyllid density per patch over the second half of the horizon, $[t_{\max}/2, t_{\max}]$. Spatial heterogeneity was measured by the coefficient of variation across patches of the patch mean of $x_1$ over $[t_0, t_{\max}]$, with $t_0 = t_{\max} - (t_{\max} \bmod T) - T$, which is $[75, 100]$ for $T = 15$. Spatial coherence was measured by the synchrony index, the mean Pearson correlation between the psyllid time series of all pairs of patches sampled at 401 equally spaced times on $[0, t_{\max}]$. The synchrony index includes the initial transient. The maximum of $x_1$ over patches and times was also recorded by the code, but it equals the initial outbreak density of 200 in every run and carries no information, so we do not report it.
+
+Strategies that use different numbers of parasitoids were compared through their efficiency. The AUC avoided is $\Delta\mathrm{AUC} = \mathrm{AUC}_0 - \mathrm{AUC}$, where $\mathrm{AUC}_0$ is the no-release run on the same graph and with the same dispersal rates. The efficiency of a schedule is $\Delta\mathrm{AUC}/Q$, the pest load avoided per parasitoid released. The script of Experiment~6 computed $Q$ with $\lfloor t_{\max}/T\rfloor$ release events, which overcounts by one whenever $T$ divides $t_{\max}$ ($T = 5, 10, 20$) because the release at $t = t_{\max}$ is never applied. All efficiencies reported here were recomputed from the stored AUC values with the correct count $N(T)$. The corrected script now writes the correct value directly.
+
+In Experiments~8--11 the three strategies were always solved together, with identical parameters, and $\mathrm{AUC}_0$ is the no-release run with the same graph, initial condition, dispersal rates, transit mortalities and $r_3$. We write $E_T$ and $E_U$ for the efficiencies of targeted and uniform releases, with $Q_T = \delta\,N(T)$ and $Q_U = n\,\delta\,N(T)$, and use $E_T/E_U$ to indicate when concentrating the releases at the outbreak patch pays off. Because $\mathrm{AUC}_0$ itself depends on every parameter that is varied, an efficiency can rise either because releases suppress the pest more or because the pest load without releases is larger.
+
+To ask whether $E_T$ depends on a single combination of parameters, we defined the lifetime of a parasitoid without hosts, $\tau_t = 1/|r_3|$, and two candidate time scales for the psyllid, $\tau_d = 1/|r_1| = 5$ a.u.\ and the characteristic period of the isolated patch, $T_0 \approx 7.8$ a.u.\ (section~\ref{sec:res-intrinsic}). The relative dispersal
+\begin{equation}
+\Pi = \frac{\Dt\,\tau_t}{\Dd\,\tau_d}
+\label{eq:Pi}
+\end{equation}
+compares how far each species disperses during its own time scale and does not depend on degree. The reach of the released parasitoids,
+\begin{equation}
+\Pi_t = \frac{\Dt\,k_s}{|r_3| + m_t\,\Dt\,k_s},
+\label{eq:Pit}
+\end{equation}
+is the expected number of departures from the outbreak patch, of degree $k_s$, during the lifetime of a parasitoid there. With transit mortality the total loss rate at that patch is $|r_3| + m_t\Dt k_s$, so $\Pi_t$ is bounded by $1/m_t$ however large $\Dt$ becomes.
+
+\subsection{Simulation experiments}
+\label{sec:experiments}
+
+The experiments are summarised in table~\ref{tab:experiments}. They are numbered as the scripts of the code repository, and Experiment~1 is not reported here. Experiment~2 crossed the seven topologies (seed 1), four values of each dispersal rate, $\Dd,\Dt\in\{0, 0.01, 0.03, 0.1\}$, and the three strategies, with the reference schedule $\delta = 35$, $T = 15$. Experiment~3 repeated this design on all 34 graph instances to quantify the variation among realisations of the stochastic families. Experiment~6 fixed $\Dd = \Dt = 0.03$ and crossed four topologies (path, star, complete and random) with a $5\times5$ grid of release sizes and periods and the two release strategies. Experiment~7 is the sensitivity analysis described in section~\ref{sec:sensitivity}. Experiments~8--11 study relative dispersal and transit mortality and are described in section~\ref{sec:exp-transit}.
+
+\begin{table}[t]
+\centering
+\caption{Design of the simulation experiments. Experiments 4 and 5 are single-patch or linearised analyses and are described in sections~\ref{sec:stability} and~\ref{sec:strobe}. Unless stated otherwise, $\delta=35$, $T=15$, $t_{\max}=100$, $r_3=-0.3$ and $m_d=m_t=0$. In Experiments~8--11 each combination of parameters was solved under the three strategies (two in Experiment~11, where uniform releases were not needed), and the run counts include them.}
+\label{tab:experiments}
+\small
+\begin{tabular}{p{1.9cm}p{10.2cm}r}
+\toprule
+experiment & factors and levels & runs\\
+\midrule
+2 & 7 topologies $\times$ 4 $\Dd$ $\times$ 4 $\Dt$ $\times$ 3 strategies; $\delta=35$, $T=15$ & 336\\
+3 & 34 graphs (stochastic families, 10 seeds) $\times$ 4 $\Dd$ $\times$ 4 $\Dt$ $\times$ 3 strategies & 1632\\
+6 & 4 topologies $\times$ $\delta\in\{10,\dots,50\}$ $\times$ $T\in\{5,10,15,20,30\}$ $\times$ 2 strategies; $\Dd=\Dt=0.03$ & 200 + 4\\
+7 & 18 parameters $\times$ \{0.9, 1.1\}; complete graph, uniform, $\delta=35$, $T=15$, $\Dd=\Dt=0.03$ & 36 + 1\\
+8 & 9 $\Dd$ $\times$ 9 $\Dt$ (log-spaced, $10^{-3}$--1) $\times$ 3 $r_3$ $\times$ 7 focal graphs $\times$ 2 ICs $\times$ 3 strategies; $m_d=m_t=0$ & 10\,206\\
+9 & 25 $\Dt$ $\times$ 3 $\Dd$ $\times$ 7 focal graphs $\times$ 2 ICs $\times$ 2 $t_{\max}$ $\times$ 3 strategies; $m_d=m_t=0$. Check at $\Dd=0$: 26 $\Dt$ $\times$ 7 graphs $\times$ 2 $t_{\max}$ $\times$ 3 strategies, IC-A & 6300 + 1092\\
+10a & 5 $m_t$ $\times$ 13 $\Dt$ $\times$ 3 $\Dd$ $\times$ 8 graphs (7 focal + complete) $\times$ 2 ICs $\times$ 2 $r_3$ $\times$ 3 strategies; $m_d=0$ & 18\,720\\
+10b & 2 $m_d$ $\times$ 4 $m_t$ $\times$ 7 $\Dt$ ($\geq 0.03$) $\times$ 3 $\Dd$ $\times$ 8 graphs $\times$ 3 strategies; IC-B, $r_3=-0.3$ & 4032\\
+11 & 10 random geometric graphs $\times$ 3 $\ell$ $\times$ 15 $\Dt$ (0.03--3) $\times$ 2 strategies; $m_{ij}=1-e^{-d_{ij}/\ell}$, IC-B, $\Dd=0.03$ & 900\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Relative dispersal and transit mortality (Experiments 8--11)}
+\label{sec:exp-transit}
+
+\paragraph{Focal graphs.} To vary the degree of the outbreak patch independently of the graph family, Experiments~8--10 used seven graphs on $n = 8$ nodes whose outbreak patch has degree $k_s = 1,\dots,7$. They are the path, with the outbreak at one end ($k_s=1$), the cycle ($k_s=2$), three Gilbert graphs of Experiment~3 (seeds 9, 3 and 4, with $k_s = 3$, 4 and 5), a Barab\'asi--Albert graph of Experiment~3 (seed 2, $k_s = 6$) and the star ($k_s = 7$). For each degree we took the first seed between 1 and 10 that produced it. No Gilbert instance had an outbreak patch of degree 6, which is why a Barab\'asi--Albert graph fills that slot. The mean degrees $\langle k\rangle$ of the seven graphs are 1.75, 2, 3, 2.5, 3.25, 3 and 1.75. Experiment~10 added the complete graph ($k_s = \langle k\rangle = 7$). With $m = 0$ it is equivalent to the star (proposition~\ref{prop:hub}), but with $m_t > 0$ it is not.
+
+\paragraph{Experiment 8, relative dispersal without transit cost.} $\Dd$ and $\Dt$ each took nine log-spaced values between $10^{-3}$ and 1, and $r_3 \in \{-0.2, -0.3, -0.45\}$, so that $\tau_t$ varies and $\Pi$ is not simply $\Dt/\Dd$ under another name. We crossed these with the seven focal graphs, both initial conditions and the three strategies. A pilot of 243 runs on the complete graph (IC-B, $r_3=-0.3$) preceded the full design. We asked whether $E_T$ collapses onto a single candidate variable. The candidates were $\Dt$, $\Dt/\Dd$, $\Pi$ with each choice of $\tau_d$, and the pair $(\Pi, \Pi_t)$. For each candidate we fitted a cubic polynomial in $\log_{10}$ of the candidate (a bivariate cubic for the pair) and computed $R^2$ on held-out data, leaving out one value of $r_3$ at a time (three folds) or one graph at a time (seven folds). Held-out values outside the training range were clamped to it, so the fitted curve was extended as a constant rather than extrapolated. We used the smaller of the two cross-validated $R^2$. A candidate was said to collapse the data if this value was at least 0.9 and exceeded that of $\Dt/\Dd$ by at least 0.1. As an upper reference we also fitted a free bivariate cubic in $(\log\Dd, \log\Dt)$, which bounds what any function of the two dispersal rates can explain. Because neither $r_1$ nor $T_0$ was varied, the two versions of $\Pi$ differ by the constant factor $T_0|r_1|$, and their fits are identical.
+
+\paragraph{Experiment 9, an optimal parasitoid dispersal rate without transit cost.} $\Dt$ took 25 log-spaced values between $10^{-3}$ and 1, with $\Dd \in \{0.01, 0.03, 0.1\}$, the seven focal graphs, both initial conditions and horizons $t_{\max} = 100$ and 300 a.u. For each curve $E_T(\Dt)$ we located the grid maximum and, when it was interior, refined its position $\Dt^*$ with a parabola in $\log_{10}\Dt$ through the maximum and its two neighbours. The prominence of the maximum is the relative drop $[E_T(\Dt^*) - E_T(\Dt^{\max})]/E_T(\Dt^*)$ to the upper end of the grid, $\Dt^{\max}$, which is 1 in Experiments~9 and~10 and 3 in Experiment~11. An interior maximum was considered real if its prominence exceeded 5\% under both horizons. A separate set of runs with $\Dd = 0$ and IC-A, including $\Dt = 0$, examined the decrease of $E_T$ seen in that row of Experiment~2 on a fine grid.
+
+\paragraph{Experiment 10, transit mortality.} In Experiment~10a only the parasitoid paid a cost, with $m_t \in \{0, 0.05, 0.1, 0.2, 0.4\}$ and $m_d = 0$. $\Dt$ took 13 log-spaced values between $10^{-3}$ and 1, with $\Dd \in \{0.01, 0.03, 0.1\}$, the eight graphs, IC-B as the main case and IC-A as control, and $r_3 \in \{-0.3, -0.45\}$. A pilot of 585 runs on the complete graph (IC-B, $r_3 = -0.3$) preceded it. Optima were located as in Experiment~9. Because only the horizon $t_{\max} = 100$ was simulated, a maximum was considered real if it was interior with prominence above 5\% at that horizon alone, a weaker requirement than in Experiment~9. To test whether the optimum lies where transit losses equal natural mortality, we computed the ratio $\rho_s = \Dt^* m_t k_s/|r_3|$ and, replacing the source degree by the mean degree, $\rho_k = \Dt^* m_t \langle k\rangle/|r_3|$. We also recorded the pest AUC with and without releases and the parasitoid AUC without releases at $\Dt^*$, to identify what drives the optimum, and the Pearson correlation across the seven focal graphs between $k_s$ and the AUC under targeted releases. Experiment~10b added psyllid transit mortality $m_d \in \{0.1, 0.2\}$ on a reduced grid around the optimum found in 10a: $m_t \in \{0.05, 0.1, 0.2, 0.4\}$, the seven values of $\Dt \geq 0.03$, the three $\Dd$, the eight graphs, IC-B and $r_3 = -0.3$. The runs with $m_d = 0$ were taken from 10a. Since $m_d$ lowers the pest load on its own, each efficiency was computed against the no-release run with the same $m_d$, and the reduction due to $m_d$ was recorded separately.
+
+\paragraph{Experiment 11, edge-specific transit mortality.} This experiment was conditional on Experiment~10 producing a real maximum for at least two values of $m_t > 0$ and a relation between $\Dt^*$ and $m_t$ that held across graphs. We placed eight nodes uniformly at random in the unit square and joined pairs closer than 0.5 (random geometric graphs), discarding disconnected graphs, until ten connected graphs were collected (seeds 2, 3, 5--9 and 11--13). Transit mortality increased with the Euclidean distance $d_{ij}$ between patches, $m_{ij} = 1 - \exp(-d_{ij}/\ell)$, with $\ell \in \{0.5, 1, 2\}$, which gave mean edge mortalities of 0.47, 0.28 and 0.15. $\Dt$ took 15 log-spaced values between 0.03 and 3, with $\Dd = 0.03$, IC-B and $r_3 = -0.3$. We compared the observed $\Dt^*$ with the value predicted by the relation of Experiment~10, $\Dt^* = c\,|r_3|/(\bar m\,k_s)$, where $c$ is the median of $\rho_s$ over the real maxima of Experiment~10a under IC-B with $r_3 = -0.3$. For $\bar m$ we used the mean of $m_{ij}$ over the edges of the outbreak patch, and alternatively the mean over all edges weighted by the number of parasitoids crossing each edge in the targeted run at $\Dt^*$, $\sum_{ij} A_{ij} m_{ij}\int x_{3,i}\,\mathrm{d}t \big/ \sum_{ij} A_{ij}\int x_{3,i}\,\mathrm{d}t$. Weighting only the edges of the outbreak patch would return the simple mean, because its emigrants are split equally among its edges. Finally, we used the mean-degree form $\Dt^* = c_k|r_3|/(\bar m\langle k\rangle)$, with $\bar m$ the mean over all edges and $c_k$ the corresponding median of $\rho_k$.
+
+\subsection{Linear stability of the synchronous state}
+\label{sec:stability}
+
+When releases are uniform and all patches share the same parameters, the synchronous motion $\mathbf{x}_i(t) = \mathbf{s}(t)$ for all $i$, where $\mathbf{s}$ solves the single-patch impulsive system, is an exact solution of equations~\eqref{eq:network}. Its transverse stability can be studied with the master stability function \citep{pecora1998,arenas2008}. Projecting the variational equation onto the eigenvectors of $L$, with eigenvalues $0 = \mu_1 < \mu_2 \le \dots \le \mu_n$, decouples it into $n$ four-dimensional problems
+\begin{equation}
+\dot{\mathbf{y}}_k = \bigl[\mathrm{D}\mathbf{f}(\mathbf{s}(t)) - \mu_k\,\Gamma\bigr]\mathbf{y}_k,\qquad \Gamma = \mathrm{diag}(\Dd, 0, \Dt, 0).
+\label{eq:msf}
+\end{equation}
+The jump map~\eqref{eq:impulse} is a translation, its Jacobian is the identity and it does not enter equation~\eqref{eq:msf}. Mode $k=1$ describes perturbations along the synchronous manifold and modes $k\ge2$ describe transverse perturbations.
+
+Because the single-patch trajectory did not settle on a period-$T$ orbit (section~\ref{sec:strobe}), we estimated the largest Lyapunov exponent of each mode along a long reference trajectory rather than computing Floquet multipliers. The reference trajectory started from $(50,10,15,30)$ with $\delta = 35$, $T = 15$ and was integrated to $t = 30\,000$. After discarding the first 30\% of the run, a unit perturbation vector initially aligned with $x_1$ was propagated with equation~\eqref{eq:msf} over 1400 consecutive segments of length $T$ and renormalised at the end of each segment \citep{benettin1980}. The exponent is the mean logarithmic growth rate over all segments, and its standard error was computed from 20 batch means of consecutive segments. A long run was necessary. Over a run to $t = 1200$, with 56 segments, the standard errors were $2$--$6\times10^{-3}$, larger than most of the exponents, and the estimates were probably still influenced by the slow growth of the oscillation. Estimates from runs to $t = 12\,000$ and $t = 30\,000$ differed by less than one standard error. The long runs, the standard errors and the rank correlations of section~\ref{sec:res-stability} are produced by the script \texttt{stability/msf\_long.py} of the code repository. We evaluated all transverse modes of the seven seed-1 topologies at $\Dd = \Dt = 0.03$ and recorded the largest exponent $\Lambda_{\max}$. As a check, the mode-1 exponent computed this way, with $\Dd=\Dt=0$ and with $\Dd=\Dt=0.03$, was identical in double precision to an independently coded single-patch calculation, and the script used for the long runs reproduced, with a run to $t = 1200$, the exponents of the original stability code to the reported precision. We then compared $\Lambda_{\max}$ with the synchrony index and the spatial coefficient of variation obtained in Experiment~2 on the same seed-1 graphs under the uniform strategy. The comparison file written by the original script paired the seed-1 exponent of the random graph with the ten-seed average of the simulated metrics, so we rebuilt it from matching instances.
+
+With transit mortality the synchronous state exists only on regular graphs, where every node has the same degree $k$. On such a graph $L = kI - A$, so for an eigenvector $\mathbf{v}$ of $L$ with eigenvalue $\mu$, $(L + mA)\mathbf{v} = \bigl(mk + (1-m)\mu\bigr)\mathbf{v}$. The synchronous mode ($\mu = 0$) then follows the single-patch model with $r_1' = r_1 - \Dd m_d k$ and $r_3' = r_3 - \Dt m_t k$, and each transverse mode obeys equation~\eqref{eq:msf} for that modified patch with $\Gamma$ replaced by $\mathrm{diag}\bigl((1-m_d)\Dd, 0, (1-m_t)\Dt, 0\bigr)$. Among our graphs only the cycle and the complete graph are regular. For these two we recomputed $\Lambda_{\max}$ with $m_t \in \{0, 0.05, 0.1, 0.2, 0.4\}$, $m_d = 0$ and $\Dd = \Dt = 0.03$. The reduction was verified by simulating both graphs from a synchronous initial state with $m_d = m_t > 0$ and comparing with the modified single patch, which agreed to a relative error below $4\times10^{-13}$.
+
+\subsection{Single-patch response to the release schedule}
+\label{sec:strobe}
+
+To characterise how the release schedule interacts with the intrinsic dynamics we simulated a single isolated patch, started at $(50,10,15,30)$, for 120 release periods on an $8\times8$ grid with $\delta\in\{5,10,\dots,40\}$ and $T\in\{5,8,11,15,20,25,30,40\}$. The state was sampled immediately after each of the last 30 releases, and the dispersion of the schedule was defined as the mean Euclidean distance of these 30 four-dimensional states from their centroid. A dispersion near zero indicates a period-$T$ response. The original script labelled schedules with dispersion below 1 as regular. That threshold cannot separate a period-$kT$ cycle with $k > 1$, whose stroboscopic states are far apart, from an aperiodic response, so we treat the dispersion as a continuous measure of how far the patch is from locking to the release period. We also integrated the patch without releases to $t = 3000$ and estimated the characteristic period of its oscillation from the intervals between successive upward crossings of the mean of $x_1$ over $t\in[2000,3000]$.
+
+\subsection{Sensitivity analysis}
+\label{sec:sensitivity}
+
+Local one-at-a-time sensitivity was evaluated on the complete graph with $\Dd = \Dt = 0.03$, uniform releases, $\delta = 35$ and $T = 15$. Each of the 18 parameters of table~\ref{tab:params} was multiplied by 0.9 and by 1.1 while the others were held at their reference values, and we recorded the percentage change in network AUC relative to the reference run. Parameters were ranked by the larger of the two absolute changes. Because the perturbation is multiplicative, the factor 1.1 increases the magnitude of negative parameters. For example, it makes $r_3$ more negative, which corresponds to higher parasitoid mortality. A one-at-a-time design explores only a small neighbourhood of the reference point and ignores interactions between parameters \citep{saltelli2019}, so these results describe local behaviour only.
+
+\subsection{Post hoc analyses and software}
+\label{sec:software}
+
+Associations between network descriptors and outcomes across the 34 graphs of Experiment~3 were measured with Spearman rank correlations at $\Dd = \Dt = 0.03$. The descriptors were the source degree, $\lambda_2$ and the mean degree. The source degree was recovered by regenerating each graph with the same generator and seed. The recomputed $\lambda_2$ matched the stored values to within $5\times10^{-16}$, which confirms that the regenerated graphs are the ones simulated. The model code is a Python port of an original Mathematica implementation and requires NumPy $\ge 1.24$, SciPy $\ge 1.10$ and NetworkX $\ge 3.0$. Stochastic graphs generated from a given seed differ from those of the Mathematica version. The post hoc analyses were run with NumPy 2.4.4, SciPy 1.17.1 and NetworkX 3.6.1. Experiments~8--11 and the checks of the transit-mortality code were run with NumPy 2.5.3, SciPy 1.18.1 and NetworkX 3.6.1. The sweep scripts write one row per parameter combination as it finishes, so an interrupted sweep can be resumed without recomputing finished runs.

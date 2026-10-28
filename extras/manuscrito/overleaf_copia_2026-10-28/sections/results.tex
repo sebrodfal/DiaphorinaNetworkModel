@@ -1,0 +1,193 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{An isolated patch oscillates and rarely locks to the release schedule}
+\label{sec:res-intrinsic}
+
+Without releases the single-patch model does not approach an equilibrium. Between $t = 2000$ and $t = 3000$ the psyllid density oscillated between 12.8 and 62.0, with a characteristic period of 7.84 a.u. estimated from 127 successive upward crossings of the mean (s.d.\ 0.23). The amplitude was still growing during the first 150 a.u.\ (electronic supplementary material, figure~S1\emph{a}), which is the scale of the network experiments.
+
+Periodic releases did not entrain this oscillation. None of the 64 schedules of the single-patch map produced a period-$T$ response, and the dispersion of the post-release states ranged from 3.2 to 31.6 (electronic supplementary material, figure~S1\emph{b}). Dispersion grew with the release period, from a mean of 5.7 at $T = 5$ to 30.3 at $T = 40$. The lowest value occurred at $\delta = 30$, $T = 15$, close to twice the intrinsic period, but the neighbouring schedule $\delta = 35$, $T = 15$ used as reference in the network experiments had a dispersion of 28.3. The response to the schedule is therefore sensitive to small changes in release size near this resonance. The largest Lyapunov exponent along the synchronous trajectory with the reference schedule was $(0.2 \pm 0.4)\times10^{-3}$, indistinguishable from zero. This is consistent with quasiperiodic motion, although weak chaos cannot be excluded. Whatever its nature, the patch-level dynamics that the network couples together are persistently oscillatory.
+
+\subsection{The release strategy dominates the outcome}
+\label{sec:res-strategy}
+
+Across the 112 combinations of topology and dispersal rates in Experiment~2, the network AUC without releases ranged from 26\,914 to 27\,416. Uniform releases lowered it by 30.4--31.0\% and releases targeted at the outbreak patch by 2.5--4.5\%. The mean psyllid density per patch in the second half of the horizon was 34.0 without releases, 21.9 under uniform releases and 32.6 under targeted releases. These differences mostly reflect the amount of parasitoid released, 1680 units in a uniform programme and 210 in a targeted one.
+
+Per parasitoid released the two strategies were comparable, and which one did better depended on dispersal (figure~\ref{fig:strategy}\emph{a,b}). The AUC avoided per unit released varied little under uniform releases, between 4.87 and 5.05 over all runs. Under targeted releases it varied between 3.25 and 5.79. The targeted strategy was least efficient when psyllids dispersed and parasitoids did not. At $\Dt = 0$ its efficiency, averaged over topologies, fell from 5.30 at $\Dd = 0$ to 3.51 at $\Dd = 0.1$. At $\Dt = 0.1$ it stayed between 5.23 and 5.33 whatever the value of $\Dd$, slightly above the uniform strategy. Targeted releases also left the network more heterogeneous. The mean spatial coefficient of variation of psyllid density was 0.083 under targeted releases against 0.008 under uniform releases and 0.006 without releases.
+
+Dispersal rates had small effects on the pest load. Without releases, raising $\Dd$ from 0 to 0.1 at $\Dt = 0$ increased the mean AUC from 27\,320 to 27\,391 (0.3\%), and raising $\Dt$ from 0 to 0.1 at $\Dd = 0$ decreased it to 26\,983 (1.2\%).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig2_strategy_topology.pdf}
+\caption{Release strategy and network structure. (\emph{a},\emph{b}) Network pest load avoided per parasitoid released under uniform (\emph{a}) and targeted (\emph{b}) releases, as a function of the dispersal rates of psyllids ($D_d$) and parasitoids ($D_t$). Each cell is the mean over the seven seed-1 topologies of Experiment~2 ($\delta=35$, $T=15$). (\emph{c}) Change in network pest AUC relative to the mean for graphs whose outbreak patch has degree 1, plotted against the degree of the outbreak patch, for the 34 graphs of Experiment~3 at $D_d=D_t=0.03$. Points are individual graphs, slightly offset horizontally by strategy, and lines join the means for each degree.}
+\label{fig:strategy}
+\end{figure}
+
+\subsection{Topology matters through the degree of the outbreak patch}
+\label{sec:res-topology}
+
+Network topology had a much weaker effect than the release strategy. For a given pair of dispersal rates, the AUC of the seven seed-1 topologies differed by at most 0.87\% without releases, 0.64\% under uniform releases and 1.59\% under targeted releases. Redrawing the stochastic graphs changed little. Across the ten instances of each stochastic family the coefficient of variation of the AUC never exceeded 0.46\%.
+
+The star and the complete graph gave the same results in every run of Experiments 2, 3 and 6, with relative differences below $2\times10^{-15}$, despite algebraic connectivities of 1 and 8. The reason is structural and holds for any graph in which the outbreak patch is adjacent to every other patch.
+
+\begin{proposition}
+\label{prop:hub}
+Suppose the outbreak patch $s$ is adjacent to all other patches, the other patches start from the same state, and releases are applied either to all patches or to $s$ alone. Then all patches other than $s$ follow the same trajectory, and the solution does not depend on which edges join them to one another.
+\end{proposition}
+
+\begin{proof}
+Consider the set of states in which every patch $j \neq s$ is in a common state $\mathbf{y}$. On this set the dispersal term of patch $j$ is $\sum_{k} A_{jk}(x_k - x_j) = A_{js}(x_s - y) + \sum_{k\neq s}A_{jk}(y - y) = x_s - y$, for both dispersing variables, whatever the edges among the non-source patches. The equations of all patches $j\neq s$ are therefore identical, and the release rule treats them identically, so the set is invariant. The initial state lies in it and solutions are unique, so the trajectory remains in it. The reduced system is a two-patch model in which the outbreak patch exchanges individuals with $n-1$ identical patches, and it involves no edge among them.
+\end{proof}
+
+The proposition relies on dispersal conserving individuals. With transit mortality the patches adjacent to the outbreak patch lose individuals at a rate proportional to their own degree, and the equivalence breaks down (section~\ref{sec:res-structural}).
+
+One Barab\'asi--Albert instance in which node 1 had degree 7 reproduced the star result exactly, as the proposition predicts. The proposition suggested looking at the degree of the outbreak patch more generally. Across the 34 graphs this single number accounted for nearly all the variation among topologies (figure~\ref{fig:strategy}\emph{c}). Its Spearman correlation with the AUC was $-0.98$ under both release strategies and $-0.87$ without releases. Algebraic connectivity and mean degree were weaker predictors, with correlations between $-0.33$ and $-0.42$. Moving the outbreak from a patch of degree 1 to one of degree 7 reduced the AUC by 0.61\% under uniform releases and by 0.72\% under targeted releases. Without releases the relationship was not monotone and the lowest AUC occurred at degree 6. The source degree was also strongly correlated with the synchrony index without releases and under uniform releases ($\rho = 0.98$ in both cases). These effects are consistent and nearly deterministic, but they are small, and in this model the choice of release strategy outweighs topology by more than an order of magnitude. They are also specific to this initial condition and to dispersal rates near 0.03, and they do not survive transit mortality (section~\ref{sec:res-structural}).
+
+\subsection{Linear stability of the synchronous state orders the networks but does not set their coherence}
+\label{sec:res-stability}
+
+Under uniform releases the largest transverse Lyapunov exponent was negative on all seven topologies (table~\ref{tab:stability}), so the synchronous state is linearly stable on every graph. The path was the least stable, with an exponent about two standard errors below zero. All exponents were small in magnitude. The corresponding e-folding times ranged from 60 a.u.\ for the complete graph to about 1050 a.u.\ for the path, against a simulated horizon of 100 a.u. Over that horizon a transverse perturbation would be multiplied by factors between 0.19 and 0.91, so the linear analysis predicts slow convergence everywhere rather than a clear separation between networks.
+
+The ranking of the exponents agreed with the ranking of the simulated coherence. The Spearman correlation between the largest transverse exponent and the synchrony index was $-0.86$ ($p = 0.01$, $n = 7$), and drawing the exponents from their sampling distributions gave a 95\% range of $-0.95$ to $-0.34$. Algebraic connectivity was less closely associated with the synchrony index ($\rho = 0.69$, $p = 0.09$). The level of coherence, however, did not follow the size of the exponents. The star and the complete graph had identical synchrony, as required by proposition~\ref{prop:hub}, while their exponents differed by a factor of about seven, and the six graphs other than the complete graph had exponents within a factor of three of each other but synchrony indices between 0.73 and 0.85. Over the horizon relevant to an outbreak, linear stability orders the networks, but the coherence actually reached is set mainly by the initial asymmetry and by how directly the outbreak patch is connected to the rest of the network.
+
+\begin{table}[t]
+\centering
+\caption{Largest transverse Lyapunov exponent $\Lambda_{\max}$ of the synchronous state under uniform releases ($\delta=35$, $T=15$, $D_d=D_t=0.03$), and simulated spatial coherence on the same seed-1 graphs. Exponents are means $\pm$ standard errors over 1400 segments (section~\ref{sec:stability}). $e^{100\Lambda_{\max}}$ is the linear amplification of a transverse perturbation over the 100 a.u.\ horizon.}
+\label{tab:stability}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+topology & $\lambda_2$ & $10^{3}\Lambda_{\max}$ & $e^{100\Lambda_{\max}}$ & synchrony index & spatial CV\\
+\midrule
+path        & 0.152 &  $-0.95 \pm 0.45$ & 0.91 & 0.731 & 0.0154\\
+cycle       & 0.586 &  $-1.70 \pm 0.47$ & 0.84 & 0.744 & 0.0127\\
+star        & 1.000 &  $-2.44 \pm 0.47$ & 0.78 & 0.851 & 0.0011\\
+complete    & 8.000 & $-16.61 \pm 0.51$ & 0.19 & 0.851 & 0.0011\\
+random      & 1.074 &  $-2.19 \pm 0.45$ & 0.80 & 0.752 & 0.0127\\
+small world & 1.839 &  $-2.19 \pm 0.45$ & 0.80 & 0.823 & 0.0015\\
+scale free  & 1.067 &  $-2.61 \pm 0.22$ & 0.77 & 0.820 & 0.0017\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Suppression and efficiency trade off across release schedules}
+\label{sec:res-dose}
+
+Release size and frequency determined how much of the pest load was removed (figure~\ref{fig:dose}\emph{a}). On the complete graph, uniform releases reduced the AUC by 4.2\% with the sparsest and smallest schedule ($\delta = 10$, $T = 30$) and by 89.2\% with the densest and largest ($\delta = 50$, $T = 5$). The path and the random graph reached 89.6\% and 89.5\% with the latter schedule. Under the most intense schedules psyllid density in some patch fell as low as 0.0013, although it never reached zero within the horizon. Topology changed the reduction achieved by a given schedule by at most 0.4 percentage points under uniform releases and 3.7 points under targeted releases, whose maximum reduction was 14.3\% on the star and complete graphs, 11.0\% on the random graph and 10.6\% on the path.
+
+Efficiency behaved very differently from suppression (figure~\ref{fig:dose}\emph{b}). For every period it decreased as release size increased, so each additional parasitoid removed less pest load than the previous one. Across all topologies, efficiency ranged from 2.85 to 5.89 under uniform releases and from 3.04 to 6.45 under targeted releases. The most efficient schedule was $\delta = 10$, $T = 20$ for all eight combinations of topology and strategy. It achieved reductions of only 6.8--6.9\% under uniform releases and 0.9\% under targeted releases. This schedule lies at the lower edge of the grid of release sizes, so the maximum of efficiency may well lie outside the range explored and has no particular meaning as an operating point. Using the release count of the original script, the most efficient schedule would have appeared to be $\delta = 10$, $T = 15$. The longest period tested, $T = 30$, was the least efficient for every release size under uniform releases, with values between 2.85 and 4.76.
+
+When results are plotted against the total number of parasitoids released, the two strategies and all periods fall close to a single increasing, saturating curve (figure~\ref{fig:dose}\emph{c}). Frequency still mattered at a fixed release rate. Among uniform schedules with $\delta/T = 2$ on the complete graph, reductions were 29.5\%, 28.1\%, 27.3\% and 22.2\% for $T = 5$, 10, 15 and 20. Part of this decline follows from the finite horizon, since the first release takes place at $t = T$ and the number of releases $N(T)$ falls faster than $1/T$, giving totals of 1520, 1440, 1440 and 1280 parasitoids for the four schedules.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig3_dose_frequency.pdf}
+\caption{Release size and period (Experiment~6, $D_d = D_t = 0.03$). (\emph{a}) Reduction in network pest AUC relative to no release and (\emph{b}) pest AUC avoided per parasitoid released, for uniform releases on the complete graph. Efficiencies use the number of releases actually applied, $N(T) = \lceil 100/T\rceil - 1$. (\emph{c}) Reduction against the total number of parasitoids released on the complete graph, for uniform (filled) and targeted (open) releases. Marker shape indicates the release period.}
+\label{fig:dose}
+\end{figure}
+
+\subsection{Sensitivity to local parameters}
+\label{sec:res-sensitivity}
+
+With the reference configuration of the sensitivity analysis the network AUC was 18\,796. Five parameters changed it by more than 9\% when perturbed by 10\% (electronic supplementary material, figure~S2). These were the intrinsic rate of plant vigour $r_4$ (14.1\%), the effect of flush on vigour $b_{42}$ (13.7\%), the effect of flush on the psyllid $b_{12}$ (12.4\%), the intrinsic rate of the parasitoid $r_3$ (12.3\%) and the benefit of parasitism to the parasitoid $b_{31}$ (9.3\%). For the first four the relative change in AUC exceeded the relative change in the parameter, so the output amplifies uncertainty in these inputs. Reducing $r_4$ by 10\% lowered the AUC by 14.1\%, and making $r_3$ 10\% more negative, that is increasing parasitoid mortality, raised it by 12.3\%. None of the eight crowding coefficients $a_i$ and $c_i$ changed the AUC by more than 1.5\%. The responses to $r_2$ and $b_{21}$ were small and had the same sign for both perturbations, which indicates that the AUC is not monotone in these parameters near the reference point. The ranking of parameters depends on the reference configuration and on the $\pm10\%$ range, and it does not account for interactions between parameters.
+
+\subsection{Targeted efficiency does not collapse onto a single dimensionless group}
+\label{sec:res-collapse}
+
+Without transit mortality (Experiment~8), the efficiency of targeted releases ranged from 2.98 to 7.09 under IC-A and from 3.02 to 22.82 under IC-B, against 4.68--5.39 and 3.14--8.14 for uniform releases. Its dependence on the dispersal rates differed between the two initial conditions (figure~\ref{fig:collapse}\emph{a,b}). Under IC-A, $E_T$ depended almost only on $\Dt$ and rose from 3.3 to 6.0 (median over the seven focal graphs, $r_3 = -0.3$). Under IC-B it depended on both rates and was highest, up to 10.8, when parasitoids dispersed fast and psyllids slowly. Targeted releases were the more efficient strategy in 56\% of the combinations under IC-A and 58\% under IC-B. The boundary $E_T = E_U$ lay near $\Dt \approx 0.05$ under IC-A whatever $\Dd$, and close to the diagonal $\Dt = \Dd$ under IC-B for $\Dd < 0.03$. Targeted releases thus paid off once the parasitoid was mobile enough. With a background infestation the threshold was an absolute value of $\Dt$ over the whole range of $\Dd$ explored, and only after a point introduction, and for $\Dd < 0.03$, did it follow the dispersal rate of the psyllid.
+
+No candidate variable collapsed the data (table~\ref{tab:collapse}, figure~\ref{fig:collapse}\emph{c,d}). The best cross-validated $R^2$ was 0.41 under IC-A and 0.18 under IC-B, far from the threshold of 0.9. Even a free function of $\Dd$ and $\Dt$ reached only 0.52 and 0.19, so most of the variation that a dispersal variable cannot capture is due to $r_3$, and the rest to the graph. The parasitoid mortality rate did not act only as a time scale. Under IC-B the median $E_T$ was 4.99, 5.56 and 6.71 for $r_3 = -0.2$, $-0.3$ and $-0.45$, because a shorter-lived parasitoid left a much larger pest load to remove, with median $\mathrm{AUC}_0$ of 18\,480, 26\,641 and 38\,140. Under IC-A the median was 4.89 and 4.86 for the first two values and 5.65 for $r_3 = -0.45$. Raising $|r_3|$ shortens $\tau_t$ and lowers $\Pi$, while $E_T$ stays the same or rises, which is why $\Pi$ performed worse than the simple ratio $\Dt/\Dd$. With $E_T/E_U$ as the response the fits improved, to 0.78 for $(\Pi,\Pi_t)$ under IC-A, but no candidate reached 0.9. Per-graph maps are given in electronic supplementary material, figure~S3.
+
+\begin{table}[t]
+\centering
+\caption{Collapse test for the efficiency of targeted releases (Experiment~8, $m_d = m_t = 0$). $R^2$ of a cubic fit in $\log_{10}$ of each candidate, computed in sample and on held-out data leaving out one value of $r_3$ or one graph at a time. The two versions of $\Pi$ differ by a constant factor and give identical fits. The last row of each block is a free bivariate cubic in $(\log\Dd,\log\Dt)$, given as an upper reference.}
+\label{tab:collapse}
+\small
+\begin{tabular}{llrrr}
+\toprule
+IC & candidate & in sample & $r_3$ left out & graph left out\\
+\midrule
+A & $\Dt$                      & 0.58 & 0.37 & 0.56\\
+  & $\Dt/\Dd$                  & 0.56 & 0.34 & 0.55\\
+  & $\Pi$ ($\tau_d = 1/|r_1|$ or $T_0$) & 0.50 & 0.23 & 0.50\\
+  & $(\Pi, \Pi_t)$             & 0.72 & 0.41 & 0.71\\
+  & reference $(\Dd, \Dt)$     & 0.74 & 0.52 & 0.71\\
+\midrule
+B & $\Dt$                      & 0.28 & $-0.01$ & 0.27\\
+  & $\Dt/\Dd$                  & 0.55 & 0.18 & 0.54\\
+  & $\Pi$ ($\tau_d = 1/|r_1|$ or $T_0$) & 0.46 & 0.01 & 0.45\\
+  & $(\Pi, \Pi_t)$             & 0.52 & 0.03 & 0.50\\
+  & reference $(\Dd, \Dt)$     & 0.58 & 0.19 & 0.56\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig4_relative_dispersal.pdf}
+\caption{Relative dispersal without transit cost (Experiment~8). (\emph{a},\emph{b}) Efficiency of targeted releases $E_T$ (pest AUC avoided per parasitoid released) as a function of the dispersal rates of psyllids and parasitoids, under IC-A (\emph{a}) and IC-B (\emph{b}). Each cell is the median over the seven focal graphs with $r_3 = -0.3$. Black line, $E_T = E_U$; dotted line, $\Dt = \Dd$. (\emph{c},\emph{d}) $E_T$ against the relative dispersal $\Pi$ for all runs, coloured by $r_3$, under IC-A (\emph{c}) and IC-B (\emph{d}).}
+\label{fig:collapse}
+\end{figure}
+
+\subsection{Without a cost of dispersal there is no intermediate optimum}
+\label{sec:res-costfree}
+
+In the absence of transit mortality there was no intermediate parasitoid dispersal rate that maximised the efficiency of targeted releases (Experiment~9, figure~\ref{fig:costfree}\emph{a--c}). Under IC-A the maximum of $E_T$ was at the upper end of the grid, $\Dt = 1$, in all 42 curves. Under IC-B it was at $\Dt = 1$ in 33 curves. The other nine, eight of them with $\Dd = 0.03$, had an interior maximum between $\Dt = 0.15$ and 0.85, but with prominence below 1.9\%, and none appeared under both horizons. These are plateaus, not optima. $E_T$ was not always monotone, because some curves dipped at low $\Dt$, as in the case $\Dd = 0$ described below, but its largest value was always at, or within 2\% of, the fastest dispersal rate tested. Parasitoids that reach patches not yet invaded do not reproduce there, but moving costs them nothing beyond their natural mortality, and they keep dispersing until they find hosts. Uniform releases showed no real maximum either. With $t_{\max} = 300$ the curves had small undulations (electronic supplementary material, figure~S4), which reflect the phase of the intrinsic oscillation relative to the release schedule rather than numerical error.
+
+The decrease of $E_T$ in the $\Dd = 0$ row of Experiment~2, from 5.30 at $\Dt = 0$ to 4.91 at $\Dt = 0.03$, was confirmed on a fine grid (figure~\ref{fig:costfree}\emph{d}). It is a valley. $E_T$ reached a minimum of 4.84--4.92 at $\Dt$ between 0.013 (star) and 0.1 (path), and then rose above its value at $\Dt = 0$ from $\Dt \approx 0.06$ on the star and $\Dt \approx 0.5$ on the path. The three points of Experiment~2 fall inside the valley. With $t_{\max} = 300$ the valley almost disappeared.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig5_cost_free.pdf}
+\caption{Efficiency of targeted releases against the parasitoid dispersal rate without transit cost (Experiment~9). Lines are the seven focal graphs, labelled by the degree $k_s$ of the outbreak patch. (\emph{a}) IC-A and (\emph{b}) IC-B with $\Dd = 0.03$ and $t_{\max} = 100$. (\emph{c}) IC-B with $t_{\max} = 300$. Dotted lines mark $\Dt = \Dd$. (\emph{d}) Verification run with $\Dd = 0$ and IC-A. The dashed line is $E_T$ at $\Dt = 0$ and squares are the means over the seven topologies of Experiment~2. All conditions are shown in electronic supplementary material, figure~S4.}
+\label{fig:costfree}
+\end{figure}
+
+\subsection{Transit mortality creates an optimal parasitoid dispersal rate}
+\label{sec:res-transit}
+
+When parasitoids died in transit (Experiment~10a), the efficiency of targeted releases developed a pronounced maximum at an intermediate dispersal rate, which moved to lower $\Dt$ as $m_t$ increased (figure~\ref{fig:transit}\emph{a--c}; all graphs in electronic supplementary material, figure~S5). With $m_t = 0$, and under either criterion, none of the 96 combinations of graph, initial condition, $\Dd$ and $r_3$ had a real maximum. With $m_t > 0$, 127 of 384 curves had one, 68 under IC-B and 59 under IC-A, with a median prominence of 73\% (range 6--97\%). The median efficiency at the maximum was 16.1, against 6.9 at $\Dt = 1$ without mortality. On the complete graph under IC-B ($r_3 = -0.3$, $\Dd = 0.03$) the optimum was at $\Dt^* = 0.59$, 0.30 and 0.17 for $m_t = 0.1$, 0.2 and 0.4. On graphs with few edges, such as the path and the star, the optimum lay beyond $\Dt = 1$ for most values of $m_t$.
+
+The maximum is not a minimum of the pest load (figure~\ref{fig:transit}\emph{d--f}). With $m_t > 0$ the pest AUC under targeted releases increased with $\Dt$. When it had an interior minimum, which happened in 53\% of the curves, the minimum was a median of 0.9\% below the lower of the two ends of the curve. What changes at the optimum is the no-release reference. As $\Dt$ increases, transit losses drive the resident parasitoid population towards extinction and the pest load without releases rises steeply, from about 27\,000 to 63\,500 on the complete graph. At $\Dt^*$ the parasitoid AUC without releases was 2--40\% of its value with $m_t = 0$ (median 20\%). Releases still maintained a parasitoid population there, so each released parasitoid avoided a large pest load. At higher $\Dt$ the released parasitoids also died in transit and $E_T$ fell towards zero. The optimum is therefore the dispersal rate at which releases make the largest difference relative to not releasing. It is not the dispersal rate that leaves the least pest, which, with any transit mortality, is the lowest one or lies within about 1\% of it.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig6_transit_mortality.pdf}
+\caption{Transit mortality of the parasitoid (Experiment~10a, IC-B, $r_3 = -0.3$, $m_d = 0$). (\emph{a}--\emph{c}) Efficiency of targeted releases on the plane ($\Dt$, $m_t$) for the complete graph, a Gilbert graph with $k_s = 5$ and the star, with $\Dd = 0.03$. Open circles, interior maxima with prominence above 5\%; crosses, maxima at the edge of the grid or with lower prominence. (\emph{d}--\emph{f}) Complete graph with $\Dd = 0.01$. (\emph{d}) $E_T$. (\emph{e}) Pest AUC with targeted releases (solid) and without releases (dashed). (\emph{f}) Parasitoid AUC without releases. Colours indicate $m_t$.}
+\label{fig:transit}
+\end{figure}
+
+\subsection{The optimum scales with transit losses over the whole network}
+\label{sec:res-rule}
+
+The optimum fell roughly where transit losses at the outbreak patch matched the natural mortality of the parasitoid, but the agreement was only to an order of magnitude (figure~\ref{fig:rule}\emph{a}). Over the 127 real maxima, $\rho_s = \Dt^* m_t k_s/|r_3|$ had a median of 1.36 and ranged from 0.49 to 5.66. For a given graph it was nearly constant, and $\Dt^*$ decreased almost as $1/m_t$, with a median log--log slope of $-0.91$ (interquartile range $-0.95$ to $-0.87$). Most of the spread was between graphs. The ratio was about 3.4 on the star, whose hub has degree 7 but whose other patches have degree 1, and about 0.5 on the path. Replacing the source degree by the mean degree of the graph reduced the spread (figure~\ref{fig:rule}\emph{b}). $\rho_k = \Dt^* m_t\langle k\rangle/|r_3|$ had a median of 0.89 and ranged from 0.60 to 2.05. The standard deviation of $\log_{10}\rho$ fell from 0.23 to 0.16, which halves its variance. This is consistent with the mechanism above, in which the optimum follows the collapse of the resident parasitoids in the whole network and not only at the outbreak patch.
+
+The dependence on $r_3$ was opposite to the one implied by the ratio. Under IC-B the transit loss rate at the optimum, $\Dt^* m_t\langle k\rangle$, was 0.46 (range 0.39--0.60) with $r_3 = -0.3$ and 0.35 (0.27--0.41) with $r_3 = -0.45$. Under IC-A it was 0.49 and 0.39. A parasitoid with higher natural mortality therefore tolerated a lower transit loss before its resident population collapsed. These values are consistent with a persistence threshold for the resident parasitoid, $\Dt m_t\langle k\rangle \approx b_{31}\bar x_1 - |r_3|$, where $\bar x_1$ is the psyllid density once the parasitoid has collapsed (79.5 per patch under IC-B and 86 under IC-A in our runs). The threshold gives 0.50 and 0.35 under IC-B and 0.56 and 0.41 under IC-A, and section~\ref{sec:discussion} motivates it with a linear invasion argument.
+
+Experiment~10 met the condition for Experiment~11. Under IC-B there was a real maximum for at least two values of $m_t > 0$ in 19 of 48 combinations of graph, $\Dd$ and $r_3$, spread over five graphs, and the slope of $\Dt^*$ against $m_t$ was similar across them. With distance-dependent mortality on random geometric graphs, all 30 curves had a real maximum, with prominences of 89--98\% (figure~\ref{fig:rule}\emph{c,d}). The relation from Experiment~10 with the source degree ($c = 1.96$) and the mean mortality of the edges of the outbreak patch predicted $\Dt^*$ with a median error of 22\% and a correlation of 0.86 on log scales. Weighting all edges by the number of parasitoids crossing them did not improve the prediction (median error 24\%, correlation 0.88). The mean-degree form ($c_k = 1.54$, mean mortality over all edges) had a median error of 10\%, a bias of $+10\%$ and a correlation of 0.99. Within each value of $\ell$ its correlation with the observed optimum was 0.88--0.97, against 0.76--0.91 for the source-degree form. $\Dt^*$ varied by less than a factor of 1.8 within each $\ell$ while $k_s$ ranged from 2 to 6, so the degree of the outbreak patch had little influence on the optimum.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig7_crest_rule.pdf}
+\caption{Location of the optimal parasitoid dispersal rate. (\emph{a}) $\rho_s = \Dt^* m_t k_s/|r_3|$ and (\emph{b}) $\rho_k = \Dt^* m_t\langle k\rangle/|r_3|$ for the 127 interior maxima with prominence above 5\% of Experiment~10a (both initial conditions, three $\Dd$, four $m_t > 0$), grouped by graph. Circles, $r_3 = -0.3$; triangles, $r_3 = -0.45$. The horizontal line is the ratio of 1 implied by equal transit and natural mortality. (\emph{c},\emph{d}) Experiment~11. Observed optimum against the prediction from Experiment~10 using the source degree and the mean mortality of the edges of the outbreak patch (\emph{c}), or the mean degree and the mean mortality of all edges (\emph{d}). Colours indicate the characteristic distance $\ell$ of the mortality kernel. The line is the identity.}
+\label{fig:rule}
+\end{figure}
+
+\subsection{Transit mortality changes the structural results}
+\label{sec:res-structural}
+
+Proposition~\ref{prop:hub} no longer held once parasitoids died in transit (figure~\ref{fig:structural}\emph{a}). The difference between the star and the complete graph was zero for $m_t = 0$. With $m_t > 0$ the star always had the lower pest AUC, by up to 36--42\% at high $\Dt$ depending on $m_t$ and on the initial condition. In the complete graph every patch has degree 7 and loses parasitoids along seven edges, whereas the leaves of the star have a single edge.
+
+The negative association between the degree of the outbreak patch and the pest load also depended on the absence of transit costs (figure~\ref{fig:structural}\emph{b,c}). Across the seven focal graphs under IC-A, with $\Dd = 0.03$ and $\Dt \approx 0.03$, the Pearson correlation between $k_s$ and the AUC under targeted releases was $-0.99$ with $m_t = 0$, in line with section~\ref{sec:res-topology}, and $-0.55$, $-0.15$, $+0.08$ and $+0.18$ with $m_t = 0.05$, 0.1, 0.2 and 0.4. Its sign changed between $m_t = 0.1$ and 0.2. Even without mortality the correlation was strongly negative only for $\Dt$ between about 0.02 and 0.1 and became positive for very low or very high $\Dt$. Under IC-B it was positive in every condition (0.40 to 0.88). A well-connected outbreak patch then spreads a pest that was absent elsewhere, and this outweighs its advantage for dispersing parasitoids.
+
+On the two regular graphs, where a synchronous state still exists, transit mortality did not destabilise it. With $\Dd = \Dt = 0.03$ the largest transverse exponent stayed negative for every $m_t$. On the cycle it was $-1.70\times10^{-3}$ at $m_t = 0$ and between $-1.27\times10^{-3}$ and $-1.80\times10^{-3}$ for $m_t = 0.05$--0.4. On the complete graph it was $-16.6\times10^{-3}$ at $m_t = 0$ and between $-13.0\times10^{-3}$ and $-16.4\times10^{-3}$ with mortality. Transit mortality therefore changed the exponents by at most about 25\%, without a consistent direction. Standard errors were below $0.33\times10^{-3}$ in all these cases.
+
+Transit mortality of the psyllid (Experiment~10b) always moved the optimum to lower $\Dt$ (figure~\ref{fig:structural}\emph{d}; electronic supplementary material, figure~S6). The median shift was $-2\%$ and $-4\%$ for $m_d = 0.1$ and 0.2 with $\Dd = 0.01$, $-3\%$ and $-11\%$ with $\Dd = 0.03$, and $-18\%$ and $-45\%$ with $\Dd = 0.1$. The shift grew with the psyllid loss rate $\Dd m_d$. In the most extreme case, the complete graph with $\Dd = 0.1$ and $m_d = 0.2$, the optimum reached the lower edge of the reduced grid, so its position there is only an upper bound. Without releases, psyllid transit mortality reduced the pest load by a median of 1.8\% for $m_d = 0.1$ (maximum 30\%) and 3.6\% for $m_d = 0.2$ (maximum 60\%).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig8_structural_consequences.pdf}
+\caption{Consequences of transit mortality for the structural results. (\emph{a}) Difference in pest AUC between the star and the complete graph under targeted releases, relative to the complete graph (IC-B, $\Dd = 0.03$, $r_3 = -0.3$). (\emph{b},\emph{c}) Pearson correlation across the seven focal graphs between the degree of the outbreak patch and the pest AUC under targeted releases, under IC-A (\emph{b}) and IC-B (\emph{c}), with $\Dd = 0.03$. Colours in (\emph{a}--\emph{c}) indicate $m_t$. (\emph{d}) Optimal parasitoid dispersal rate on the complete graph against $m_t$ for three values of the psyllid transit mortality $m_d$, with $\Dd = 0.03$ (solid) and 0.1 (dashed). The optimum was searched for $\Dt \geq 0.03$ only (Experiment~10b).}
+\label{fig:structural}
+\end{figure}

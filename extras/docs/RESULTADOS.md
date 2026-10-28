@@ -37,7 +37,7 @@ La prueba 4 también registra cuánto difieren la estrella y el grafo completo c
 
 ### Figura 1.1. Mapas de E_T y de E_T/E_U
 
-![](../Model/Python/Results/plan/phase1/fig1_1_maps.png)
+![](../../code/Results/plan/phase1/fig1_1_maps.png)
 
 La figura muestra la mediana sobre las 7 redes con r₃ = −0,3. El mapa por red está en `fig1_1b_maps_by_network.png`.
 
@@ -47,7 +47,7 @@ La figura muestra la mediana sobre las 7 redes con r₃ = −0,3. El mapa por re
 
 ### Figura 1.2. Curvas de colapso
 
-![](../Model/Python/Results/plan/phase1/fig1_2_collapse.png)
+![](../../code/Results/plan/phase1/fig1_2_collapse.png)
 
 ### Tabla 1.1. R² con validación cruzada (`phase1/table1_1_cv_r2.csv`)
 
@@ -86,7 +86,7 @@ Con E_T/E_U como respuesta (`table1_1_cv_r2_Eratio.csv`) los R² suben (0,78 con
 
 ### Figura 2.1. E_T contra D_t
 
-![](../Model/Python/Results/plan/phase2/fig2_1_ET_vs_Dt.png)
+![](../../code/Results/plan/phase2/fig2_1_ET_vs_Dt.png)
 
 ### Tabla 2.1 (`phase2/table2_1_optimum.csv`)
 
@@ -109,7 +109,7 @@ Con t_max = 300 las curvas tienen ondulaciones. No son error numérico. Vienen d
 
 ### Figura 2.2. Verificación con D_d = 0
 
-![](../Model/Python/Results/plan/phase2/fig2_2_dd0_check.png)
+![](../../code/Results/plan/phase2/fig2_2_dd0_check.png)
 
 La caída de 5,30 a 4,91 en la fila D_d = 0 del experimento 2 **es real, no un efecto de la malla gruesa**. E_T(D_t) tiene un valle. Baja desde 5,30 con D_t = 0 hasta unos 4,85, con el mínimo entre D_t ≈ 0,015 en la estrella y ≈ 0,1 en la trayectoria. Luego sube por encima de 5,30, desde D_t ≈ 0,06 en la estrella y desde ≈ 0,5 en la trayectoria. Los tres puntos del experimento 2 (cuadrados negros, media de sus 7 topologías) caen justo en el valle. Con t_max = 300 el valle casi desaparece y la curva es plana hasta D_t ≈ 0,02.
 
@@ -123,13 +123,13 @@ La caída de 5,30 a 4,91 en la fila D_d = 0 del experimento 2 **es real, no un e
 
 #### Figura 3.1. E_T en el plano (D_t, m_t)
 
-![](../Model/Python/Results/plan/phase3/fig3_1_maps_Dt_mt.png)
+![](../../code/Results/plan/phase3/fig3_1_maps_Dt_mt.png)
 
 La figura corresponde a CI-B, r₃ = −0,3 y D_d = 0,03. La versión con CI-A está en `fig3_1b_maps_Dt_mt_CIA.png`. **La cresta existe**. Con m_t = 0 no hay ningún máximo real en las 96 condiciones. Con m_t > 0 hay 127 máximos interiores con prominencia > 5 % (68 en CI-B y 59 en CI-A), con prominencia mediana del 73 %. El máximo se desplaza a D_t menores cuando m_t crece, tal como predecía la hipótesis. Cuando la cresta cae fuera de la malla (D_t* > 1), como en la trayectoria o la estrella con m_t pequeño, el máximo queda en el borde.
 
 #### Figura 3.5. Mecanismo (análisis añadido)
 
-![](../Model/Python/Results/plan/phase3/fig3_5_mechanism.png)
+![](../../code/Results/plan/phase3/fig3_5_mechanism.png)
 
 El análisis que explica la cresta no estaba en el plan, pero es necesario para interpretarla.
 
@@ -141,7 +141,7 @@ En consecuencia, **la cresta es un óptimo de eficiencia relativa al contrafactu
 
 #### Figura 3.2. La regla D_t*·m_t·k_s ≈ |r₃|
 
-![](../Model/Python/Results/plan/phase3/fig3_2_rule.png)
+![](../../code/Results/plan/phase3/fig3_2_rule.png)
 
 | Versión | Condiciones | Mediana | Rango | DE de log₁₀ |
 |---|---|---|---|---|
@@ -154,7 +154,7 @@ En consecuencia, **la cresta es un óptimo de eficiencia relativa al contrafactu
 
 #### Figura 3.3. Efecto del grado del foco
 
-![](../Model/Python/Results/plan/phase3/fig3_3_degree.png)
+![](../../code/Results/plan/phase3/fig3_3_degree.png)
 
 La figura muestra la correlación de Pearson entre k_s y el AUC con liberación dirigida, calculada sobre las 7 redes.
 
@@ -168,7 +168,7 @@ Tabla en `phase3/table3_3_degree_correlation.csv`.
 
 **Diseño.** m_d ∈ {0,1; 0,2} sobre una malla reducida alrededor de la cresta (m_d = 0 se toma de 3a), con m_t ∈ {0,05; 0,1; 0,2; 0,4}, 7 valores de D_t en [0,03; 1], D_d ∈ {0,01; 0,03; 0,1}, 8 redes, CI-B y r₃ = −0,3. Son 1344 combinaciones y 4032 corridas. Cada eficiencia se calcula contra la corrida sin liberación con el mismo m_d.
 
-![](../Model/Python/Results/plan/phase3/fig3_6_phase3b.png)
+![](../../code/Results/plan/phase3/fig3_6_phase3b.png)
 
 Desplazamiento de D_t* respecto de m_d = 0, en las condiciones donde había un máximo interior con m_d = 0 (`table3_6_phase3b_optimum.csv`):
 
@@ -186,7 +186,7 @@ La reducción de la plaga atribuible a m_d, sin liberaciones (`table3_7_pest_red
 
 **Equivalencia estrella–completo.**
 
-![](../Model/Python/Results/plan/phase3/fig3_4_star_vs_complete.png)
+![](../../code/Results/plan/phase3/fig3_4_star_vs_complete.png)
 
 Con m_t = 0 la diferencia es 0. Con m_t > 0 la estrella siempre tiene menos AUC de plaga que el completo. La diferencia es casi nula con D_t pequeño y crece hasta 36 a 42 % con D_t grande, según m_t. La proposición de equivalencia deja de valer en cuanto hay mortalidad en tránsito. Tabla en `table3_4_star_vs_complete.csv`.
 
@@ -212,7 +212,7 @@ Las cifras son el máximo exponente de Lyapunov transversal, con D_d = D_t = 0,0
 
 **Diseño.** Las mismas condiciones de 3a (8 redes, CI-A y CI-B, 3 valores de D_d, 2 de r₃ y 5 de m_t), con seis valores más de D_t que siguen el mismo paso de 0,25 décadas, de 1,78 a 31,6. Son 2880 combinaciones y 8640 corridas (`run_extra_phase3a_extended.py`). Junto con `phase3a_grid.csv` dan 19 valores de D_t en [10⁻³; 31,6]. Las salidas están en `extra/`.
 
-![](../Model/Python/Results/plan/extra/figA_ext_rule.png)
+![](../extended_analyses/Results/figA_ext_rule.png)
 
 - Las 384 curvas con m_t > 0 tienen un máximo interior con prominencia > 5 %. Ninguna queda en el borde. Con m_t = 0 sigue sin haber ningún máximo (0 de 96).
 - Cada pendiente de log D_t* contra log m_t se ajusta ahora con 4 puntos (96 ajustes). La mediana es −0,92 (rango intercuartílico −1,04 a −0,87), y −0,89 en CI-B con r₃ = −0,3. **D_t* ∝ 1/m_t se confirma con datos completos.**
@@ -234,7 +234,7 @@ Cuando se citen en el texto, conviene usar estas cifras en lugar de las de la ta
 
 **Diseño.** Se usan 10 grafos geométricos aleatorios conexos de 8 nodos en el cuadrado unitario, con radio de conexión 0,5. Se descartaron las semillas 1, 4 y 10 porque daban grafos desconexos. La mortalidad es m_ij = 1 − exp(−d_ij/ℓ) con ℓ ∈ {0,5; 1; 2}, lo que da una media de m de 0,47, 0,28 y 0,15. D_t toma 15 valores en [0,03; 3], con D_d = 0,03, CI-B y r₃ = −0,3. Son 450 combinaciones y 900 corridas.
 
-![](../Model/Python/Results/plan/phase4/fig4_1_observed_vs_predicted.png)
+![](../../code/Results/plan/phase4/fig4_1_observed_vs_predicted.png)
 
 Las 30 curvas tienen un máximo interior con prominencia de 89 a 98 %. Las constantes se tomaron de los máximos reales de la fase 3 con el mismo r₃ y la misma CI: c = 1,96 para k_s y c_k = 1,54 para ⟨k⟩.
 
@@ -258,7 +258,7 @@ Las 30 curvas tienen un máximo interior con prominencia de 89 a 98 %. Las const
 
 **Diseño.** x₃(0) = 0 en todos los nodos y la plaga como en CI-B (la condición se registra como `CI = B0`). Se usan las 8 redes, D_t en 25 valores logarítmicos en [10⁻³; 10], m_t ∈ {0; 0,05; 0,1; 0,2; 0,4}, D_d ∈ {0,01; 0,03; 0,1}, r₃ ∈ {−0,3; −0,45}, m_d = 0 y las tres estrategias. Son 6000 combinaciones y 18 000 corridas (`run_extra_no_resident.py`), con salidas en `extra/`. La corrida sin liberación no depende de D_t (su variación es exactamente 0), así que **un máximo de E_T es un mínimo real del AUC de plaga**.
 
-![](../Model/Python/Results/plan/extra/figB_no_resident.png)
+![](../extended_analyses/Results/figB_no_resident.png)
 
 - Hay un mínimo interior del AUC con liberación dirigida en 236 de las 240 curvas.
 - En 110 curvas ese mínimo es más de 5 % mejor que los dos extremos de la malla. Por red: trayectoria 27, ciclo 25, aleatorias 42, libre de escala 7, estrella 8, completo 1.

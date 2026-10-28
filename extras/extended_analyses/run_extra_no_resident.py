@@ -13,17 +13,20 @@ D_d in {0.01, 0.03, 0.1}; 7 focal networks + complete graph; r3 in {-0.3, -0.45}
 m_d = 0, delta = 35, T = 15, t_max = 100. Strategies None, Uniform, Targeted.
 25 x 5 x 3 x 8 x 2 = 6000 combinations = 18 000 runs.
 
-Output: Results/plan/extra/no_resident_grid.csv (resumable). Same columns as the
-phase grids, with CI = "B0".
+Output: Results/no_resident_grid.csv next to this script (resumable). Same columns
+as the phase grids, with CI = "B0". The model code is imported from code/.
 """
 
 import csv
 import os
+import sys
 import time
 from multiprocessing import Pool
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, "..", "..", "code"))
+
 import core
-from common import results_path
 from core import n_releases
 from network_experiments import solve_network_data
 import plan_common as pc
@@ -33,7 +36,7 @@ MT_GRID = [0.0, 0.05, 0.1, 0.2, 0.4]
 DD_GRID = [0.01, 0.03, 0.1]
 R3_GRID = [-0.3, -0.45]
 N = pc.N_NODES
-CSV = results_path(os.path.join("plan", "extra", "no_resident_grid.csv"))
+CSV = os.path.join(HERE, "Results", "no_resident_grid.csv")
 
 
 def ics_no_resident(tt):

@@ -1,0 +1,30 @@
+% Electronic supplementary material. Compile separately.
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[labelfont=bf,font=small]{caption}
+\usepackage{xcolor}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\newcommand{\todo}[1]{\textcolor{red}{[#1]}}
+
+\begin{document}
+\begin{center}
+{\large\bfseries Electronic supplementary material for ``\todo{Title}''}\\[0.4em]
+\todo{Authors}
+\end{center}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/figS1_intrinsic_dynamics.pdf}
+\caption{Dynamics of an isolated patch. (\emph{a}) Psyllid density without releases (grey) and with releases of $\delta = 35$ every $T = 15$ (blue), from the initial state $(50,10,15,30)$. (\emph{b}) Dispersion of the state sampled after each of the last 30 of 120 releases, on a $\log_{10}$ scale. Zero dispersion would indicate a response of period $T$. No schedule on the grid reached a dispersion below 3.2.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{figures/figS2_sensitivity.pdf}
+\caption{One-at-a-time sensitivity of the network pest AUC to multiplying each local parameter by 0.9 or 1.1. Complete graph, uniform releases, $\delta = 35$, $T = 15$, $D_d = D_t = 0.03$. Parameters are ordered by the larger absolute change. For negative parameters the factor 1.1 increases their magnitude.}
+\end{figure}
+\end{document}

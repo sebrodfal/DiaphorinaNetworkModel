@@ -1,184 +1,156 @@
-# Dispersión relativa, hipótesis Goldilocks y mortalidad en tránsito
+# Dispersal costs and network structure in augmentative biological control of *Diaphorina citri*
 
-Modelo en red de *Diaphorina citri* (psílido, x₁), brotes (x₂), *Tamarixia radiata* (parasitoide, x₃) y vigor de planta (x₄), con liberaciones periódicas del parasitoide. El repositorio contiene:
+Code and simulation outputs for the manuscript *Dispersal costs determine when network structure matters for augmentative biological control of* Diaphorina citri (S. Rodríguez-Falcón, H. Arias-Castro, J. Galeano and L. Stucchi).
 
-- la versión original en Mathematica (`Model/Mathematica`),
-- la versión en Python del modelo (`Model/Python`, experimentos 1 a 7 del manuscrito),
-- la implementación completa del plan de trabajo [`docs/plan_de_trabajo.pdf`](docs/plan_de_trabajo.pdf), fases 0 a 4,
-- dos análisis añadidos después de la revisión del 17 de octubre de 2026: la fase 3 con una malla de D_t extendida (3d) y la fase 5, liberación sin parasitoide residente.
+The model couples four variables in each patch of a network: the psyllid *D. citri* (x₁), host-plant flush (x₂), the parasitoid *Tamarixia radiata* (x₃) and plant vigour (x₄). Parasitoids are released periodically (δ individuals every T time units), either in every patch (uniform) or only in the outbreak patch (targeted). Psyllids and parasitoids disperse along the edges of the graph and may die in transit:
 
-| Documento | Contenido |
-|---|---|
-| Este README | Qué se hizo, resultados principales, cómo reproducir y cómo usar los resultados |
-| [`docs/RESULTADOS.md`](docs/RESULTADOS.md) | Explicación fase por fase con todas las figuras y tablas |
-| [`docs/CORRECCIONES.md`](docs/CORRECCIONES.md) | Errores del código e incoherencias del plan encontrados y cómo se resolvieron |
-| [`Model/Python/README.md`](Model/Python/README.md) | Referencia técnica del código |
+    x1' = f1(x) - Dd (L + md A) x1,      x3' = f3(x) - Dt (L + mt A) x3,
 
-## Resultados en una página
+where L is the graph Laplacian, A the adjacency matrix and md, mt are transit-mortality probabilities (scalars, or an n×n matrix m_ij in Experiment 11). Flush and vigour do not disperse.
 
-**Fase 0 (aprobada).** El integrador admite mortalidad en tránsito m_d y m_t, dos condiciones iniciales (CI-A y CI-B) y cuenta bien el número de liberaciones. Con m = 0 reproduce las 336 corridas del experimento 2 con un error relativo máximo de 4·10⁻¹⁶, y pasa la prueba de balance de masa, la de D = 0 y la de equivalencia entre la estrella y el grafo completo.
-
-**Fase 1 (resultado negativo).** Ninguna variable adimensional colapsa la eficiencia de la liberación dirigida E_T. El mejor R² con validación cruzada es 0,41 en CI-A y 0,18 en CI-B, cuando el criterio pedía 0,9. La razón es que |r₃| no actúa solo como una escala de tiempo. Una mortalidad natural mayor del parasitoide duplica el AUC de plaga sin liberación y por eso **aumenta** E_T, mientras que Π = D_tτ_t/(D_dτ_d) mueve r₃ en sentido contrario.
-
-**Fase 2 (sin Goldilocks sin costo).** Sin mortalidad en tránsito, E_T crece con D_t hasta el borde de la malla (D_t = 1) en las 42 curvas de CI-A. En CI-B aparecen nueve mesetas con un máximo interior, pero su prominencia no pasa de 1,9 % y ninguna se repite en los dos horizontes. La caída de 5,30 a 4,91 que se veía en el experimento 2 con D_d = 0 es real. Es un valle cuyo mínimo cae entre D_t ≈ 0,015 y 0,1 según la red. Más allá, la eficiencia supera de nuevo 5,30, desde D_t ≈ 0,06 en la estrella y desde D_t ≈ 0,5 en la trayectoria.
-
-**Fase 3 (hay cresta, pero hay que interpretarla bien).** Con m_t > 0 aparece un D_t óptimo muy marcado, con prominencia mediana del 73 %, que baja como D_t* ∝ m_t^−0,91. La compuerta formal hacia la fase 4 se cumple. Hay que tener en cuenta dos cosas al leerla.
-1. El pico de E_T **no** es un mínimo del AUC de plaga con liberación. Aparece porque en la corrida sin liberación el parasitoide residente colapsa (su AUC cae a entre 2 y 40 % del valor que tiene sin mortalidad, con mediana del 20 %) mientras que las liberaciones lo mantienen. Es un óptimo de eficiencia relativa a un contrafactual que se deteriora.
-2. La regla D_t*·m_t·k_s ≈ |r₃| se cumple solo en orden de magnitud. El cociente tiene una mediana de 1,33 en CI-B, pero va de 0,49 a 5,66 y depende de la red y de r₃. Con el **grado medio** ⟨k⟩ en lugar del grado del foco la dispersión se reduce a la mitad (de 0,60 a 2,05), y el valor absoluto de la pérdida en la cresta, D_t*·m_t·⟨k⟩, se parece más a b₃₁·x̄₁ − |r₃| que a |r₃|. Aquí x̄₁ es la densidad de plaga sin parasitoide.
-
-**Fase 3d (malla extendida, añadida).** La malla original de D_t terminaba en 1 y ahí quedaban 255 de las 384 curvas con m_t > 0. Con la malla extendida hasta 31,6, **las 384 tienen un máximo interior** y D_t* ∝ m_t^−0,92 (4 puntos por condición, 96 condiciones). Con ⟨k⟩, la pérdida en la cresta D_t*·m_t·⟨k⟩ es casi constante dentro de cada r₃ (desviación de 0,04 a 0,06 en log₁₀): vale 0,475 con r₃ = −0,3 y 0,325 con r₃ = −0,45 en CI-B.
-
-Otros resultados de la fase 3. Con m_t > 0 la estrella y el grafo completo dejan de ser equivalentes, con hasta 42 % menos AUC en la estrella. La correlación entre el grado del foco y el AUC con liberación dirigida (−0,99 en CI-A con m = 0) pasa a +0,18 con m_t = 0,4. El estado sincrónico del ciclo y del grafo completo sigue siendo estable para todos los m_t. La mortalidad del psílido m_d baja D_t*. La mediana del desplazamiento es de 2 a 4 % con D_d = 0,01, de 3 a 11 % con D_d = 0,03 y de 18 a 45 % con D_d = 0,1, para m_d = 0,1 y 0,2.
-
-**Fase 4 (opcional, se hizo porque la compuerta pasó).** En 30 grafos geométricos con mortalidad que depende de la distancia, todas las curvas tienen un máximo interior. La regla de la fase 3 con k_s y la mortalidad media de las aristas del foco predice D_t* con un error mediano del 22 % (correlación 0,86). La versión con ⟨k⟩ y la mortalidad media de toda la red lo predice con un error del 10 % (correlación 0,99).
-
-**Fase 5 (añadida, el Goldilocks de control).** Si el parasitoide se libera donde todavía no está establecido (x₃(0) = 0), la corrida sin liberación no depende de D_t y el óptimo de D_t es un **mínimo real de plaga**. Aparece en 236 de 240 curvas y supera en más de 5 % a ambos extremos en 110. El D_t óptimo baja con m_t (pendiente −0,73) y es asimétrico: dispersarse demasiado deja entre 44 y 47 % más plaga, y dispersarse poco entre 3 y 7 % (hasta 18 % en la trayectoria). Este óptimo de control está a un D_t unas 30 veces menor que la cresta de eficiencia de la fase 3.
-
-**Corrección al experimento 6.** Contaba con `floor(t_max/T)` una liberación en t = t_max que nunca se aplica. Tras corregirlo, el calendario de mejor costo-eficiencia pasa de T = 15 a T = 20 en las ocho combinaciones de topología y estrategia.
-
-## Estructura
+## Repository layout
 
 ```
 .
-├── README.md                      este archivo
-├── docs/
-│   ├── plan_de_trabajo.pdf        plan original
-│   ├── RESULTADOS.md              resultados fase por fase (incluye 3d y fase 5)
-│   ├── CORRECCIONES.md            errores e incoherencias resueltos (incluye la revisión del 17-oct)
-│   └── historial/                 informe de estado de septiembre de 2026 (antes del plan)
-└── Model/
-    ├── Mathematica/               versión original (Functions.m, NetworkExperiments.wl, ...)
-    └── Python/
-        ├── core.py, common.py, functions.py, network_experiments.py, network_stability.py
-        ├── run_experiment{1..7}_*.py, plot_from_csv_experiment{3,6}.py, Model.ipynb
-        ├── plan_common.py             definiciones del plan (redes, Π, Π_t, eficiencias, ejecutor)
-        ├── plan_plots.py              estilo y paleta de las figuras del plan
-        ├── test_phase0.py             pruebas de la fase 0 (7 pruebas)
-        ├── run_phase1_relative_dispersion.py   + analyze_phase1.py
-        ├── run_phase2_goldilocks.py            + analyze_phase2.py
-        ├── run_phase3_transit_mortality.py     + analyze_phase3.py
-        ├── run_phase3c_stability.py
-        ├── run_phase4_edge_mortality.py
-        ├── run_extra_phase3a_extended.py       fase 3d  ┐
-        ├── run_extra_no_resident.py            fase 5   ├ + analyze_extra.py
-        ├── make_manuscript_figures.py          figuras del manuscrito (PDF, en inglés)
-        └── Results/
-            ├── experiment*.csv|png    experimentos 1 a 7 (el 6 regenerado con la corrección)
-            └── plan/
-                ├── phase{0..4}/       CSV crudos, tablas y figuras del plan
-                ├── extra/             fase 3d y fase 5 (CSV, tablas, figuras, summary_extra.json)
-                └── manuscript/        fig4 a fig9 y figS3 a figS7
+├── README.md
+├── requirements.txt
+└── code/
+    ├── core.py                 local vector field, Jacobian and impulsive integrator
+    ├── common.py               parameters (table 1), initial conditions, CSV output
+    ├── functions.py            helpers shared with Experiment 5
+    ├── network_experiments.py  network model with transit mortality, topologies, metrics
+    ├── network_stability.py    master stability function (Benettin exponents)
+    ├── plan_common.py          focal graphs, efficiencies and the parallel, resumable runner
+    ├── plan_plots.py           palette and style of the diagnostic figures
+    ├── test_phase0.py          checks of the transit-mortality code (Methods)
+    ├── run_experiment{2..7}_*.py           Experiments 2-7
+    ├── run_phase{1..4}_*.py, run_phase3c_stability.py   Experiments 8-11
+    ├── analyze_phase{1,2,3}.py             tables and diagnostic figures of Experiments 8-10
+    ├── make_manuscript_figures.py          figures 4-8 and S3-S6
+    ├── analysis/               figures 2, 3, S1 and S2, and the numbers of Experiments 2-7
+    ├── stability/              long-run transverse Lyapunov exponents (table 3) and sigma/(m_t<k>)
+    ├── figures/                figures 2, 3, S1 and S2 (PDF)
+    └── Results/
+        ├── experiment{2..7}_*.csv|png      Experiments 2-7
+        ├── plan/phase0/                    checks of the transit-mortality code
+        ├── plan/phase{1..4}/               Experiments 8-11: raw grids, tables, diagnostic figures
+        ├── plan/manuscript/                figures 4-8 and S3-S6 (PDF)
+        └── stability/                      table 3 and the stability numbers of sections 3 and 4
 ```
 
-## Cómo reproducir
+The code of Experiments 8-11 keeps the names of the work plan it was written for: phase *k* is Experiment *k* + 7. The diagnostic figures in `Results/plan/phase*/` have Spanish labels and are not part of the manuscript.
 
-Requiere Python ≥ 3.10. Los resultados se generaron con Python 3.13, numpy 2.5.3, scipy 1.18.1, networkx 3.6.1, pandas 3.0.5 y matplotlib 3.11.2. Las redes aleatorias dependen de la versión de networkx. Con otra versión, la prueba 1 de la fase 0 (reproducir el experimento 2) puede fallar en las topologías Random, SmallWorld y ScaleFree aunque el código esté bien. Si pasa, conviene fijar `networkx==3.6.1`.
+## Experiments
+
+Experiments are numbered as in the manuscript (table 2). Experiment 1 was a validation of the Python port of the original Mathematica code and is not reported.
+
+| Experiment | Content | Script | Output in `code/Results/` |
+|---|---|---|---|
+| 2 | 7 topologies × D_d × D_t × 3 strategies | `run_experiment2_outbreak_containment.py` | `experiment2_*` |
+| 3 | 34 stochastic graphs, 10 seeds | `run_experiment3_replicates.py` | `experiment3_*` |
+| 4 | stability of the synchronous state | `run_experiment4_stability_validation.py` (t = 1200), `stability/msf_long.py` (t = 30 000, reported values) | `experiment4_*`, `stability/` |
+| 5 | single patch, dose and period grid | `run_experiment5_bifurcation_map.py` | `experiment5_*` |
+| 6 | dose and frequency | `run_experiment6_dose_frequency.py` | `experiment6_*` |
+| 7 | one-at-a-time sensitivity | `run_experiment7_sensitivity.py` | `experiment7_*` |
+| 8 | relative dispersal, D_d × D_t | `run_phase1_relative_dispersion.py`, `analyze_phase1.py` | `plan/phase1/` |
+| 9 | optimum of D_t without transit cost | `run_phase2_goldilocks.py` (`--check-dd0` for D_d = 0), `analyze_phase2.py` | `plan/phase2/` |
+| 10a, 10b | transit mortality of the parasitoid, and of both species | `run_phase3_transit_mortality.py` (`--phase3b` for 10b), `analyze_phase3.py` | `plan/phase3/` |
+| 11 | edge-specific transit mortality on random geometric graphs | `run_phase4_edge_mortality.py` | `plan/phase4/` |
+| checks | the four checks of the transit-mortality code described in Methods, and three numerical checks | `test_phase0.py` | `plan/phase0/phase0_tests.json` |
+
+`run_phase3c_stability.py` checks numerically the reduction of the synchronous state with transit mortality on regular graphs, and `stability/sigma_ratio.py` computes σ/(m_t⟨k⟩) for the eight graphs of Experiment 10 (section 4).
+
+## Figures and tables
+
+| Item | Script (run from `code/`) | File |
+|---|---|---|
+| Table 1 | parameters in `common.py` | |
+| Figure 1 | drawn in the manuscript (TikZ) | |
+| Figures 2, 3, S2 | `analysis/make_figures.py` | `figures/` |
+| Figure S1 | `analysis/intrinsic_dynamics.py` (after `make_figures.py`) | `figures/` |
+| Table 3, rank correlations of the stability analysis, exponents with transit mortality | `stability/msf_long.py` | `Results/stability/` |
+| σ/(m_t⟨k⟩), section 4 | `stability/sigma_ratio.py` | `Results/stability/sigma_ratio.csv` |
+| Figures 4-8, S3-S6 | `make_manuscript_figures.py` | `Results/plan/manuscript/` |
+
+`analysis/make_figures.py` also prints the numbers of Experiments 2-7 quoted in the Results. The Spearman correlation it prints for the stability analysis comes from the short run of Experiment 4 (t = 1200); the values reported in the manuscript are those of `stability/msf_long.py`.
+
+## Reproducing the results
+
+The stored results were generated with Python 3.13, numpy 2.5.3, scipy 1.18.1, networkx 3.6.1, pandas 3.0.5 and matplotlib 3.11.2. The random, small-world and scale-free graphs depend on the networkx version, so `requirements.txt` fixes networkx.
 
 ```bash
-cd Model/Python
 pip install -r requirements.txt
+cd code
 
-python test_phase0.py                              # ~4 min, debe terminar en "ALL PHASE-0 TESTS PASS"
+# Experiments 2-7 (in this order: Experiment 4 reads the summary of Experiment 3)
+python run_experiment2_outbreak_containment.py
+python run_experiment3_replicates.py
+python run_experiment5_bifurcation_map.py
+python run_experiment4_stability_validation.py
+python run_experiment6_dose_frequency.py
+python run_experiment7_sensitivity.py
 
-python run_phase1_relative_dispersion.py --pilot   # 243 corridas
-python run_phase1_relative_dispersion.py           # 10 206 corridas
+python test_phase0.py                              # ~4 min, ends with "ALL PHASE-0 TESTS PASS"
+
+python run_phase1_relative_dispersion.py           # Experiment 8, 10 206 runs
 python analyze_phase1.py
-
-python run_phase2_goldilocks.py                    # 6300 corridas
-python run_phase2_goldilocks.py --check-dd0        # 1092 corridas
+python run_phase2_goldilocks.py                    # Experiment 9, 6300 runs
+python run_phase2_goldilocks.py --check-dd0        # 1092 runs
 python analyze_phase2.py
-
-python run_phase3_transit_mortality.py --pilot     # 585 corridas
-python run_phase3_transit_mortality.py             # 18 720 corridas
-python run_phase3_transit_mortality.py --phase3b   # 4032 corridas
+python run_phase3_transit_mortality.py             # Experiment 10a, 18 720 runs
+python run_phase3_transit_mortality.py --phase3b   # Experiment 10b, 4032 runs
 python run_phase3c_stability.py
 python analyze_phase3.py
+python run_phase4_edge_mortality.py                # Experiment 11, 900 runs
 
-python run_phase4_edge_mortality.py                # 900 corridas, lee la compuerta de la fase 3
+python stability/msf_long.py --tend 30000          # ~15 min
+python stability/sigma_ratio.py
 
-python run_extra_phase3a_extended.py               # fase 3d, 8640 corridas
-python run_extra_no_resident.py                    # fase 5, 18 000 corridas
-python analyze_extra.py
-
-python make_manuscript_figures.py                  # todas las figuras; o p. ej. "fig9 figS7"
+python analysis/make_figures.py
+python analysis/intrinsic_dynamics.py
+python make_manuscript_figures.py
 ```
 
-Los tiempos son de una máquina de 2 núcleos: fase 1 unos 25 min, fase 2 unos 35 min, fase 3a unos 40 min y fase 3b unos 9 min. En una de 14 núcleos, la fase 3d tardó 38 min (los D_t grandes son lentos) y la fase 5, 20 min. Los scripts `run_phase*` usan todos los núcleos y son **reanudables**. Escriben una fila por combinación a medida que terminan, y si se interrumpen basta con volver a ejecutarlos para que sigan donde quedaron. Para rehacer una fase desde cero hay que borrar su CSV.
+Notes:
 
-Los barridos usan `rtol = 1e-8` y `atol = 1e-10`. La prueba 6 de la fase 0 comprueba que esto cambia E_T y E_U en menos de 10⁻⁸ en relación con las tolerancias del manuscrito (`1e-10` y `1e-12`), que se siguen usando en la prueba de reproducción y en los experimentos 1 a 7.
+- The `run_experiment*.py` scripts run on import. Run them as scripts, never import them.
+- The `run_phase*.py` scripts use all CPU cores and are resumable: they append one row per parameter combination, and if interrupted they continue where they stopped. Delete the CSV to rerun an experiment from scratch. `--pilot` runs the pilots of Experiments 8 and 10 (`phase1_pilot.csv`, `phase3a_pilot.csv`).
+- On a 2-core machine Experiment 8 takes about 25 min, Experiment 9 about 35 min and Experiment 10a about 40 min.
+- Experiments 2-7 use DOP853 with `rtol = 1e-10`, `atol = 1e-12`. The sweeps of Experiments 8-11 use `rtol = 1e-8`, `atol = 1e-10`; check 6 of `test_phase0.py` shows that this changes the efficiencies by about 10⁻⁸ (relative).
+- `python stability/msf_long.py --tend 1200 --out Results/stability_short` reproduces the original exponents of Experiment 4 and serves as a regression test.
+- Read the CSV files of Experiments 2-7 with `pd.read_csv(path, keep_default_na=False)`; otherwise pandas turns the strategy label `"None"` into `NaN`.
 
-## Cómo usar los resultados
+## Output of Experiments 8-11
 
-### Archivos crudos
+Each row of `phase1_grid.csv`, `phase2_grid.csv`, `phase3a_grid.csv` and `phase3b_grid.csv` is one parameter combination, solved with the three strategies.
 
-Cada fila de `phase1_grid.csv`, `phase2_grid.csv`, `phase3a_grid.csv` y `phase3b_grid.csv` es **una combinación de parámetros**, en la que se resolvieron las tres estrategias con parámetros idénticos. Las columnas son:
-
-| Columna | Significado |
+| Column | Meaning |
 |---|---|
-| `Network`, `k_s` | red (ver tabla de redes) y grado del foco (nodo 0) |
-| `CI` | `A`: 200 psílidos en el foco y 20 en los demás nodos; `B`: 200 en el foco y 0 en los demás |
-| `Dd`, `Dt`, `r3`, `md`, `mt`, `tmax` | parámetros variados |
-| `Delta`, `T`, `n_rel` | dosis, período y liberaciones aplicadas, n_rel = ⌈t_max/T⌉ − 1 |
-| `Q_T`, `Q_U` | parasitoides liberados, δ·n_rel·1 y δ·n_rel·8 |
-| `AUC_None`, `AUC_Uniform`, `AUC_Targeted` | ∫ Σᵢ x₁ᵢ dt en cada estrategia |
-| `AUCfocus_*`, `ParAUC_*` | AUC de plaga en el foco y AUC total del parasitoide |
-| `E_T`, `E_U`, `E_ratio` | (AUC_None − AUC_estrategia)/Q y el cociente E_T/E_U |
-| `Pi_r1`, `Pi_T0`, `Pi_t` | Π con τ_d = 1/\|r₁\| = 5 o τ_d = T₀ = 7,8, y Π_t = D_t k_s/(\|r₃\| + m_t D_t k_s) |
+| `Network`, `k_s` | focal graph and degree of the outbreak patch (node 0) |
+| `CI` | initial condition. `A`: 200 psyllids in the outbreak patch and 20 elsewhere (IC-A); `B`: 200 in the outbreak patch and 0 elsewhere (IC-B) |
+| `Dd`, `Dt`, `r3`, `md`, `mt`, `tmax` | parameters varied |
+| `Delta`, `T`, `n_rel` | dose, period and number of releases applied, n_rel = ⌈t_max/T⌉ − 1 |
+| `Q_T`, `Q_U` | parasitoids released, δ·n_rel and 8·δ·n_rel |
+| `AUC_None`, `AUC_Uniform`, `AUC_Targeted` | network pest load ∫ Σᵢ x₁ᵢ dt for each strategy |
+| `AUCfocus_*`, `ParAUC_*` | pest load in the outbreak patch and parasitoid load of the network |
+| `E_T`, `E_U`, `E_ratio` | efficiencies (AUC_None − AUC)/Q and their ratio E_T/E_U |
+| `Pi_r1`, `Pi_T0`, `Pi_t` | dimensionless dispersal ratios tested in Experiment 8 |
 
-Los CSV se leen con `pd.read_csv(ruta, keep_default_na=False)`. Sin esa opción, pandas convierte la estrategia `"None"` de los CSV de los experimentos 2 a 7 en `NaN`.
+Focal graphs of Experiments 8-10 (n = 8, outbreak at node 0):
 
-### Redes focales
-
-| Nombre | Generador (semilla) | k_s | ⟨k⟩ |
+| Name | Generator (seed) | k_s | ⟨k⟩ |
 |---|---|---|---|
-| Path | trayectoria, foco en un extremo | 1 | 1,75 |
-| Cycle | ciclo | 2 | 2,00 |
-| Random_s9 | G(8; 0,4), semilla 9 | 3 | 3,00 |
-| Random_s3 | G(8; 0,4), semilla 3 | 4 | 2,50 |
-| Random_s4 | G(8; 0,4), semilla 4 | 5 | 3,25 |
-| ScaleFree_s2 | Barabási–Albert (m = 2), semilla 2 | 6 | 3,00 |
-| Star | estrella, foco en el centro | 7 | 1,75 |
-| Complete | grafo completo (solo fases 3 y piloto) | 7 | 7,00 |
+| Path | path, outbreak at one end | 1 | 1.75 |
+| Cycle | cycle | 2 | 2.00 |
+| Random_s9 | G(8, 0.4), seed 9 | 3 | 3.00 |
+| Random_s3 | G(8, 0.4), seed 3 | 4 | 2.50 |
+| Random_s4 | G(8, 0.4), seed 4 | 5 | 3.25 |
+| ScaleFree_s2 | Barabási–Albert (m = 2), seed 2 | 6 | 3.00 |
+| Star | star, outbreak at the hub | 7 | 1.75 |
+| Complete | complete graph (Experiment 10 only) | 7 | 7.00 |
 
-Las cuatro redes aleatorias son instancias del experimento 3, con el mismo generador y la misma semilla. En cada caso se tomó la primera semilla entre 1 y 10 cuyo nodo 0 tiene el grado buscado.
+The four stochastic graphs are instances of Experiment 3: for each degree, the first seed between 1 and 10 whose node 0 has that degree.
 
-### Qué se puede afirmar y qué no
+## Licence and citation
 
-Afirmaciones respaldadas:
-
-- La eficiencia de la liberación dirigida no depende de una sola combinación adimensional de D_t, D_d y r₃ (tabla 1.1). Ni D_t/D_d ni Π sirven para generalizar a otros pares plaga–enemigo.
-- Sin costo de dispersión, en este modelo y con estos horizontes, un parasitoide más móvil nunca es peor para la liberación dirigida, salvo mesetas de menos del 2 %.
-- Con mortalidad en tránsito existe un D_t que maximiza E_T y escala como 1/(m_t·⟨k⟩). Con la malla extendida la cresta es interior en las 384 condiciones con m_t > 0, con pendiente −0,92. La compuerta de la fase 3 se cumple y la fase 4 confirma la forma de la regla en redes heterogéneas.
-- Cuando el parasitoide no está establecido antes de liberar (fase 5), existe un D_t que minimiza la plaga y baja con m_t. Un parasitoide demasiado móvil es mucho peor (entre 44 y 47 % más plaga) que uno poco móvil (entre 3 y 7 %, hasta 18 % en la trayectoria).
-- La proposición de equivalencia estrella–completo y la correlación negativa entre grado del foco y AUC solo valen con m = 0.
-
-Hay que reportarlas con salvedades:
-
-- La cresta de E_T mide cuánto evita la liberación **respecto de no liberar**, con un parasitoide residente que colapsa en esa corrida de referencia. En la cresta, el AUC de plaga con liberación es mucho mayor que con D_t bajo (figura 3.5). Por eso no es un óptimo de control. Con residente, el D_t que deja menos plaga es casi el más bajo en las redes muy conectadas, pero no en la trayectoria ni en el ciclo con CI-B, donde hay un mínimo interior de hasta 15 %. El óptimo de control propiamente dicho es el de la fase 5.
-- La constante de la regla depende de r₃. Con la malla extendida, D_t*·m_t·⟨k⟩ vale 0,475 con r₃ = −0,3 y 0,325 con r₃ = −0,45 (CI-B). La fórmula |r₃| del plan no recoge esa dependencia y la explicación propuesta con b₃₁x̄₁ − |r₃| es una lectura posterior a los datos, no una derivación.
-- El óptimo de control de la fase 5 tiene un beneficio moderado frente a un D_t bajo en las redes muy conectadas (1 a 7 % en el grafo completo y la estrella). Su pendiente con m_t (−0,73) no es exactamente −1.
-- Las curvas con t_max = 300 tienen oscilaciones en D_t (figura 2.1) que vienen de la dinámica oscilatoria del modelo, no de error numérico.
-- La correlación −0,98 entre grado del foco y AUC se obtiene en CI-A, con D_d = D_t ≈ 0,03 y m = 0. Con D = 0,01 o 0,1 baja a −0,42 y −0,63, y en CI-B es positiva (entre +0,40 y +0,88).
-
-### Para el manuscrito
-
-Los tres resultados que el plan señalaba como decisivos son:
-
-| Entregable | Archivo | Resultado |
-|---|---|---|
-| Tabla 1.1, prueba de colapso | `Results/plan/phase1/table1_1_cv_r2.csv` | negativo, ninguna candidata colapsa |
-| Figura 3.1, cresta en (D_t, m_t) | `Results/plan/phase3/fig3_1_maps_Dt_mt.png` | positivo, la cresta existe y baja con m_t |
-| Figura 3.2, regla D_t*·m_t·k_s ≈ \|r₃\| | `Results/plan/phase3/fig3_2_rule.png` | parcial, vale en orden de magnitud y mejora con ⟨k⟩ |
-
-Añadidos después de la revisión:
-
-| Entregable | Archivo | Resultado |
-|---|---|---|
-| Regla con la malla extendida (3d) | `Results/plan/extra/figA_ext_rule.png`, `manuscript/figS7_crest_rule_extended_grid.pdf` | positivo: D_t* ∝ m_t^−0,92 en las 96 condiciones; constante con ⟨k⟩ muy estable dentro de cada r₃ |
-| Óptimo de control sin residente (fase 5) | `Results/plan/extra/figB_no_resident.png`, `manuscript/fig9_control_optimum_no_resident.pdf` | positivo: Goldilocks de control, asimétrico, que baja con m_t |
-
-Antes de enviar el manuscrito hay que decidir dos cosas: si las figuras 3.1 y 3.2 (y fig7) se reemplazan por la versión con la malla extendida, y si la fase 5 entra como resultado principal o como complemento.
-
-## Licencia y cita
-
-El repositorio no trae licencia. Hay que añadir una antes de hacerlo público.
+To be added before the repository is made public.

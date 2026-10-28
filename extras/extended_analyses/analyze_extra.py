@@ -1,8 +1,8 @@
 """Analysis of the extra runs added after the 2026-10-17 review.
 
-Inputs (read only): Results/plan/phase3/phase3a_grid.csv, Results/plan/phase1/phase1_grid.csv
-                    Results/plan/extra/phase3a_ext_grid.csv, no_resident_grid.csv
-Outputs in Results/plan/extra/:
+Inputs (read only): code/Results/plan/phase3/phase3a_grid.csv, code/Results/plan/phase1/phase1_grid.csv
+                    Results/phase3a_ext_grid.csv, Results/no_resident_grid.csv (next to this script)
+Outputs in Results/ next to this script:
   A. Fase 3a on the extended grid D_t in [1e-3, 31.6]
      table_A_ext_optimum.csv, table_A_ext_slopes.csv, table_A_ext_rule.csv, figA_ext_rule.png
   B. Releases without a resident parasitoid (control optimum of D_t)
@@ -14,6 +14,10 @@ Outputs in Results/plan/extra/:
 
 import json
 import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, "..", "..", "code"))
 
 import numpy as np
 import pandas as pd
@@ -25,7 +29,7 @@ from analyze_phase2 import optimum
 import analyze_phase3 as a3
 import analyze_phase1 as a1
 
-OUT = results_path(os.path.join("plan", "extra"))
+OUT = os.path.join(HERE, "Results")
 P = lambda *p: results_path(os.path.join("plan", *p))
 
 
@@ -41,7 +45,7 @@ def slopes(t, keys):
 # ------------------------------------------------------------------ A
 def part_a(summary):
     base = pd.read_csv(P("phase3", "phase3a_grid.csv"))
-    ext = pd.read_csv(P("extra", "phase3a_ext_grid.csv"))
+    ext = pd.read_csv(os.path.join(OUT, "phase3a_ext_grid.csv"))
     d = pd.concat([base, ext], ignore_index=True)
     t = a3.table(d)
     t.to_csv(os.path.join(OUT, "table_A_ext_optimum.csv"), index=False)
@@ -99,7 +103,7 @@ def part_a(summary):
 
 # ------------------------------------------------------------------ B
 def part_b(summary):
-    d = pd.read_csv(P("extra", "no_resident_grid.csv"))
+    d = pd.read_csv(os.path.join(OUT, "no_resident_grid.csv"))
     d["neg_AUC_T"] = -d.AUC_Targeted
     const = d.groupby(["Network", "Dd", "r3", "mt"]).AUC_None.agg(lambda x: (x.max() - x.min()) / x.mean())
     rows = []
