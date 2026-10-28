@@ -1,0 +1,29 @@
+{
+ "cases": [
+  {
+   "Topology": "Cycle",
+   "D": 0.03,
+   "m": 0.2,
+   "max_rel_err": 1.158932210453917e-13
+  },
+  {
+   "Topology": "Cycle",
+   "D": 0.3,
+   "m": 0.4,
+   "max_rel_err": 7.760803024303731e-14
+  },
+  {
+   "Topology": "Complete",
+   "D": 0.03,
+   "m": 0.2,
+   "max_rel_err": 3.420329261692601e-13
+  },
+  {
+   "Topology": "Complete",
+   "D": 0.3,
+   "m": 0.4,
+   "max_rel_err": 1.4573941522416484e-13
+  }
+ ],
+ "pass": true
+}
